@@ -28,8 +28,9 @@ class Grafo:
             salida = salida + str(A[i]) + "\n"
         return salida
     
-    def cargarDesdeMatriz(self,V,Matriz: list):
+    def cargarDesdeMatriz(self,V: list,Matriz: list):
         A = []
+        print(type(Matriz))
         if(len(V)!= len(Matriz)):
             print("La cantidad de vertices debe ser la misma que la cantidad de filas de la Matriz")
         else:
@@ -39,7 +40,7 @@ class Grafo:
         self._A = A 
        
     
-               
+        #Hay un cambio
         
         
 
