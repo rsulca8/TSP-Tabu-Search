@@ -31,17 +31,18 @@ class Grafo:
     def cargarDesdeMatriz(self,V: list,Matriz: list):
         A = []
         print(type(Matriz))
-        if(len(V)!= len(Matriz)):
-            print("La cantidad de vertices debe ser la misma que la cantidad de filas de la Matriz")
-        else:
-            for fila in range(0,Matriz):
-                for columna in range(0, fila):
-                    A.append(Arista(V[fila],V[columna],Matriz[fila][columna]))
+        #if(1!=1):
+        #    print("La cantidad de vertices debe ser la misma que la cantidad de filas de la Matriz")
+        #else:
+            #for fila in range(0,len(Matriz)):
+            #    for columna in range(0, len(fila)):
+            #        A.append(Arista(V[fila],V[columna],Matriz[fila][columna]))
         self._A = A 
        
     
         #Hay un cambio
         
+        #Puto el que lee
         
 
 
