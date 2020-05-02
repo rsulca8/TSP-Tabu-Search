@@ -16,6 +16,7 @@ class Vertice():
     def setNext(self, N):
         self._next = N
 
-    
-        
+
+
+
 
