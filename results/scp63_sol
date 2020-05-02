@@ -1,0 +1,29 @@
+python2 main.py
+ cols 1000 rows 200
+ Lectura exitosa
+ Iter 0
+Ant 0 currOF 1061
+Ant 1 currOF 1053
+Ant 2 currOF 859
+Ant 3 currOF 1217
+Ant 4 currOF 979
+Ant 5 currOF 780
+Ant 6 currOF 897
+Ant 7 currOF 1105
+Ant 8 currOF 963
+Ant 9 currOF 782
+ Iter 1
+Ant 0 currOF 725
+Ant 1 currOF 743
+Ant 2 currOF 758
+Ant 3 currOF 551
+Ant 4 currOF 752
+Ant 5 currOF 741
+Ant 6 currOF 680
+Ant 7 currOF 761
+Ant 8 currOF 720
+Ant 9 currOF 614
+Instance scp41.txt Best OF 551
+
+
+TERMINO!
