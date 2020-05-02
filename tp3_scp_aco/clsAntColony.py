@@ -1,11 +1,11 @@
 import clsAnt as Ant
-reload(Ant)
+#reload(Ant)
 
 import clsSCPInfo as SCPInfo 
-reload(SCPInfo)
+#reload(SCPInfo)
 
 import clsPheromone as Pheromone 
-reload(Pheromone)
+#reload(Pheromone)
 
 
 class clsAntColony:
@@ -59,14 +59,14 @@ class clsAntColony:
 			self._myList[k].updatePheromone()
 
 		else:
-			print "Error clsAntColony updatePheromone " + " posicion invalida"
+			print("Error clsAntColony updatePheromone " + " posicion invalida")
 
 
 	def calculateOFValue(self, k):
 		if k>=0 and k<self.getNbrOfAnts()+2:
 			self._myList[k].calculateOFValue()
 		else:
-			print "Error clsAntColony calculateOFValue " + " posicion invalida"
+			print ("Error clsAntColony calculateOFValue " + " posicion invalida")
 
 
 	def getOFValue(self, k):
@@ -75,7 +75,7 @@ class clsAntColony:
 		if k>=0 and k<self.getNbrOfAnts()+2:
 			value =  self._myList[k].getOFValue()
 		else:
-			print "Error clsAntColony getOFValue " + " posicion invalida"
+			print ("Error clsAntColony getOFValue " + " posicion invalida")
 
 		return value
 
@@ -94,14 +94,14 @@ class clsAntColony:
 
 
 		else:
-			print "Error clsAntColony updateBestAnt " + " posicion invalida"
+			print ("Error clsAntColony updateBestAnt " + " posicion invalida")
 
 
 	def selectNextNeighbor(self, k):
 		if k>=0 and k<self.getNbrOfAnts():
 			self._myList[k].selectNextNeighbor()
 		else:
-			print "Error clsAntColony updateBestAnt " + " posicion invalida"
+			print ("Error clsAntColony updateBestAnt " + " posicion invalida")
 
 
 	def restartInformation(self):

@@ -1,12 +1,12 @@
 import clsSolution as Solution 
-reload(Solution)
+#reload(Solution)
 
 
 import clsSCPInfo as SCPInfo 
-reload(SCPInfo)
+#reload(SCPInfo)
 
 import clsPheromone as Pheromone 
-reload(Pheromone)
+#reload(Pheromone)
 
 import random
 import math
@@ -170,7 +170,7 @@ class clsAnt:
 
 		else:
 
-			print "Error clsAnt selectNeighbors " + " no hay vecinos disponibles"
+			print ("Error clsAnt selectNeighbors " + " no hay vecinos disponibles")
 
 
 
@@ -226,7 +226,7 @@ class clsAnt:
 
 				else:
 
-					print "clsAnt selectNextNeighbor " + " no se puede terminar el camino"
+					print ("clsAnt selectNextNeighbor " + " no se puede terminar el camino")
 
 
 	def getPathElement(self, position):
