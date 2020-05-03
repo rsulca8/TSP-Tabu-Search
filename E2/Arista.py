@@ -24,5 +24,14 @@ class Arista():
     def getPeso(self):
         return self._peso
 
+    def tieneOrigen(self,V):
+        return (V == self.getOrigen())
+    
+    def tieneDestino(self,V):
+        return (V == self.getDestino())
+
     def __str__(self):
-        return str(self._origen) + " --> " + str(self._destino)
+        return "(" + str(self._origen) + "," + str(self._destino) + "," + str(self._peso) + ")"
+
+    def __repr__(self):
+        return str(self)
