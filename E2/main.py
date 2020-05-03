@@ -29,12 +29,12 @@ if __name__ == "__main__":
 
     print("----------")
 
-    print("grafo g: " + str(g))
+
     
     print("------------------ CARGAR DESDE MATRIZ --------------------------")
 
-    matriz = [[1,0,0],[1,4,5],[2,3,4]]
-
+    g.cargarDesdeEUC_2D(g.getV, "eil101.tsp")
+    #print("grafo g: " + str(g))
     #g1 = G(Vertices,None)
     #g1.cargarDesdeMatriz(Vertices,matriz)
 
