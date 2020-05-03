@@ -69,16 +69,28 @@ class Grafo:
         salida = ""
         V = self.getV()
         #Muestra la primera fila con los vertices
-        for i in range(0,len(V)):
-            salida += str(V[i]) + "    "
+        if(len(self.__matrizDistancias) == len(self.getV())):
+            print("RAMA1")
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
 
-        salida = salida + "\n"
-        for i in V:
-            salida += str(i) + "    "
-            for j in V:
-                indice = self.getCostoArista(Arista(i,j,0))
-                salida += str(self.getA()[indice].getPeso()) + "    "
             salida = salida + "\n"
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
+                for j in range(0,len(V)):
+                    salida += str(self.__matrizDistancias[i][j]) + "    "
+                salida = salida + "\n"
+        else:
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
+
+            salida = salida + "\n"
+            for i in V:
+                salida += str(i) + "    "
+                for j in V:
+                    indice = self.getCostoArista(Arista(i,j,0))
+                    salida += str(self.getA()[indice].getPeso()) + "    "
+                salida = salida + "\n"
         return salida
     
     def nodosConOrigen(self, V):
@@ -100,23 +112,28 @@ class Grafo:
                     A.append(aux)
         self._A = A 
        
+    def getMatriz(self):
+        return self.__matrizDistancias
     
+    def setMatriz(self, M):
+        self.__matrizDistancias = M
+
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
         
-        matrizResultante = []
+        self.__matrizDistancias = []
         vertices = []
+        aristas = []
         lineas = archivo.readlines()
         indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
         lineaEOF = lineas.index("EOF\n")
         dim = lineaEOF - indSeccionCoord
-        for i in range(1,dim):
-            vertices.append(Vertice(i))
+
 
         #Lista donde irán las coordenadas
         coordenadas = []
 
-        #Separa las coordenadas en una matriz 
+        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
         for i in range(indSeccionCoord+1, lineaEOF):
             textoLinea = lineas[i]  
             textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
@@ -126,6 +143,8 @@ class Grafo:
           #Arma la matriz de distancias
         for coordRow in coordenadas:
             fila = []
+            v_origen = Vertice(coordRow[0])
+            vertices.append(v_origen)
             for coordCol in coordenadas:
                 x1 = float(coordRow[1])
                 y1 = float(coordRow[2])
@@ -135,10 +154,11 @@ class Grafo:
                 if(dist == 0):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)
-            matrizResultante.append(fila)
-        
-        self.setV(vertices)
-        self.cargarDesdeMatriz(self.getV(), matrizResultante)
+                v_destino = Vertice(coordCol[0])
+                aristas.append(Arista(v_origen,v_destino,dist))
+            self.__matrizDistancias.append(fila)
+            self.setA(aristas)
+            self.setV(vertices)
 
 
 
