@@ -4,8 +4,9 @@ from Grafo import Grafo
 import tkinter.filedialog
 
 class Ventana(tk.Tk):
-    def __init__(self,master=None):
+    def __init__(self):
         tk.Tk.__init__(self)
+        self.geometry("600x800")
         self.titulo()
         self.barraMenus()
     
@@ -16,7 +17,7 @@ class Ventana(tk.Tk):
     def barraMenus(self):
         self.__menu = tk.Menu(self)
         self.__menuArchivo = tk.Menu(self.__menu)
-        self.__menuArchivo.add_command(label="Abrir", command=self.openFile())
+        self.__menuArchivo.add_command(label="Abrir", command=self.openFile)
         self.__menu.add_cascade(label="Archivo", menu=self.__menuArchivo)
         self.config(menu = self.__menu)
 
