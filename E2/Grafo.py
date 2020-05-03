@@ -3,13 +3,25 @@ from Arista import Arista
 import sys
 import re
 import math 
-
+from multipledispatch import dispatch
 class Grafo:
+
+    @dispatch()  
+    def __init__(self):
+        self._A = []
+        self._V = []
+        
+    @dispatch(str)  
+    def __init__(self,archivo):
+        self._A = []
+        self._V = []
+        self.cargarDesdeEUC_2D(archivo)
+        
+    @dispatch(list,list)
     def __init__(self,V:list,A: list):
         self._V = V
         self._A = A
-        self.rellenarAristas() 
-
+        self.rellenarAristas()
 
     def setA(self, A):
         self._A = A
@@ -89,7 +101,7 @@ class Grafo:
         self._A = A 
        
     
-    def cargarDesdeEUC_2D(self,V:list,pathArchivo):
+    def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
         
         matrizResultante = []
