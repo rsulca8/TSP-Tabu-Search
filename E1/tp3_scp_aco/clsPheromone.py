@@ -1,6 +1,6 @@
 
 import clsSolution as Solution
-reload(Solution)
+#reload(Solution)
 
 class clsPheromone(Solution.clsSolution):
 	def __init__(self, initialValue, cols, invalidValue):

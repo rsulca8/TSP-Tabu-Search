@@ -17,7 +17,7 @@ class clsSolution:
 		if self.getSize()<self._cols:
 			self._myList.append(value)
 		else:
-			print "Error clsSolution addValue. Tamanio excedido"
+			print ("Error clsSolution addValue. Tamanio excedido")
 
 
 	# esto lo uso en lista de filas cubiertas por las columnas
@@ -25,7 +25,7 @@ class clsSolution:
 		if position>=0 and position<self.getSize():
 			self._myList[position].append(value)
 		else:
-			print "Error clsSolution addValueAtPos." + str(position) + " no existe."
+			print ("Error clsSolution addValueAtPos." + str(position) + " no existe.")
 
 
 
@@ -34,11 +34,11 @@ class clsSolution:
 			if self.getSize()<self._cols:
 				self._myList.append(column)
 			else:
-				print "Error clsSolution addColumn. Tamanio excedido"
+				print ("Error clsSolution addColumn. Tamanio excedido")
 
 		else:
 
-			print "Error clsSolution addColumn " + str(column) + " ya existe." 
+			print ("Error clsSolution addColumn " + str(column) + " ya existe." )
 
 
 	def delColumn(self, column):
@@ -47,7 +47,7 @@ class clsSolution:
 			del(self._myList[position])
 		else:
 
-			print "Error clsSolution delColumn " + str(column) + " no existe."
+			print ("Error clsSolution delColumn " + str(column) + " no existe.")
 
 
 	def getValueAtPos(self, position):
@@ -56,7 +56,7 @@ class clsSolution:
 			value = self._myList[position]
 
 		else:
-			print "Error clsSolution getValueAtPos " + str(position) + " no existe."
+			print ("Error clsSolution getValueAtPos " + str(position) + " no existe.")
 
 		return value
 
@@ -68,13 +68,13 @@ class clsSolution:
 					self._myList[position] = newValue
 
 				else:
-					print "Error clsSolution setValueAtPos " + str(newValue) + " valor incorrecto."
+					print ("Error clsSolution setValueAtPos " + str(newValue) + " valor incorrecto.")
 			else:
 				self._myList[position] = newValue
 				# esto es para el usar negativos en la lista heuristica
 
 		else:
-			print "Error clsSolution setValueAtPos " + str(position) + " no existe."
+			print ("Error clsSolution setValueAtPos " + str(position) + " no existe.")
 
 
 
@@ -85,6 +85,6 @@ class clsSolution:
 			if element in self._myList:
 				response = True
 		else:
-			print "Error clsSolution isInside " + " lista vacia."
+			print ("Error clsSolution isInside " + " lista vacia.")
 
 		return response

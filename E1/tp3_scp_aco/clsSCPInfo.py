@@ -1,6 +1,5 @@
-
 import clsSolution as Solution 
-reload(Solution)
+#reload(Solution)
 
 
 class clsSCPInfo:	
@@ -8,8 +7,8 @@ class clsSCPInfo:
 		self._rows = 0
 		self._cols=0
 
-		self._instanceDir='' #'/instances/'
-		self._instanceName='' #'scp41.txt'
+		self._instanceDir=''
+		self._instanceName=''
 		self._myFile=None
 
 
@@ -50,7 +49,7 @@ class clsSCPInfo:
 			self._rows = int(self._rows)
 			self._cols = int(self._cols)
 
-			print " cols " + str(self._cols) + " rows " + str(self._rows)
+			print (" cols " + str(self._cols) + " rows " + str(self._rows))
 
 
 			self._costList=Solution.clsSolution(self._cols, self._invalidValue)
@@ -95,12 +94,12 @@ class clsSCPInfo:
 						counter = nbrOfCoverings + 100
 						# me voy
 
-			print " Lectura exitosa"
+			print (" Lectura exitosa")
 
 
 
 		except IOError:
-			print "Error clsSCPInfo openFile. No existe el archivo"
+			print ("Error clsSCPInfo openFile. No existe el archivo")
 
 	
 	def getColumnCost(self, position):
@@ -111,7 +110,7 @@ class clsSCPInfo:
 
 		else:
 
-			print "Error clsSCPInfo getColumnCost " + " Posicion invalida" 
+			print ("Error clsSCPInfo getColumnCost " + " Posicion invalida")
 
 		return cost
 
@@ -124,7 +123,7 @@ class clsSCPInfo:
 
 		else:
 
-			print "Error clsSCPInfo getColumnCost " + " Posicion invalida" 
+			print ("Error clsSCPInfo getColumnCost " + " Posicion invalida")
 
 		return counter
 
@@ -136,6 +135,6 @@ class clsSCPInfo:
 			rowsCoveredList = self._colList.getValueAtPos(position)
 
 		else:
-			print "Error clsSCPInfo getRowsCovered " + str(position) + " posicion invalida"
+			print ("Error clsSCPInfo getRowsCovered " + str(position) + " posicion invalida")
 
 		return rowsCoveredList
