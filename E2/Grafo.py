@@ -70,7 +70,6 @@ class Grafo:
         V = self.getV()
         #Muestra la primera fila con los vertices
         if(len(self.__matrizDistancias) == len(self.getV())):
-            print("RAMA1")
             for i in range(0,len(V)):
                 salida += str(V[i]) + "    "
 
@@ -95,10 +94,10 @@ class Grafo:
     
     def nodosConOrigen(self, V):
         salida = []
-        print(str(self._A))
-        for arista in self._A:
-            if(arista.getOrigen() == V):
+        for arista in self.getA():
+            if((arista.tieneOrigen(V)) == True):
                 salida.append(arista)
+                
         return salida
 
     def cargarDesdeMatriz(self,V: list,Matriz: list):
@@ -160,7 +159,27 @@ class Grafo:
             self.setA(aristas)
             self.setV(vertices)
 
+    def obtenerSolucionVecinoCercano(self,inicio:Vertice):
+        M = self.getMatriz()
+        V = self.getV()
+        A = self.getA()
+        recorrido = []
+        aristasIniciales = self.nodosConOrigen(inicio)
+        while(len(A)!=0):
+            vecinoCercano = self.getAristaMinima(aristasIniciales)
+            recorrido.append(vecinoCercano)
+            for i in aristasIniciales:
+                A.remove(i)
+            aristasIniciales = self.nodosConOrigen(vecinoCercano.getDestino())
+            print(recorrido)
+        #print(recorrido)
 
+    def getAristaMinima(self,listaAristas):
+        minimo = listaAristas[0]
+        for i in listaAristas:
+            if(i.getPeso() < minimo.getPeso()):
+                minimo = i
+        return minimo
 
 #Calcula la distancia euclidea en dos nodos A y B 
 def distancia(x1,y1,x2,y2):
