@@ -1,15 +1,15 @@
 import clsACOSCP as ACOSCP 
-reload(ACOSCP)
+#reload(ACOSCP)
 
 
 if __name__=='__main__':
         
         instanceName='scp41.txt'
 
-        instanceDir='instances/'
-        resultsDir='results/'
+        instanceDir='C:\\COSAS SALVADAS\\unsa\\LAS\\Opt - Optimización Concurrente y Paralela\\GONSULAND\\tp3_scp_aco\\instances\\'
+        resultsDir='C:\\COSAS SALVADAS\\unsa\\LAS\\Opt - Optimización Concurrente y Paralela\\GONSULAND\\tp3_scp_aco\\results\\'
 
-        fileName = 'scp63.txt'
+        fileName = '/scp41.txt'
 
         alpha = 1
         beta = 2
@@ -37,7 +37,7 @@ if __name__=='__main__':
         objACOSCP.openFile()
 
         objACOSCP.solveProblem()
-        print "\n\nTERMINO!"
+        print ("\n\nTERMINO!")
 
 
 

@@ -1,11 +1,11 @@
 import clsSCPInfo as SCPInfo 
-reload(SCPInfo)
+#reload(SCPInfo)
 
 import clsAntColony as AntColony 
-reload(AntColony)
+#reload(AntColony)
 
 import clsPheromone as Pheromone 
-reload(Pheromone)
+#reload(Pheromone)
 
 
 class clsACOSCP:
@@ -133,7 +133,7 @@ class clsACOSCP:
 
 			nbrOfSteps = self._objSCPInfo.getNbrOfCols()
 			for iter in range(self.getNbrOfIters()):
-				print " Iter " + str(iter)
+				print (" Iter " + str(iter))
 
 				for step in range(nbrOfSteps):					
 					if step==0:
@@ -151,7 +151,7 @@ class clsACOSCP:
 					self._objAntColony.calculateOFValue(k)
 					currOF = self._objAntColony.getOFValue(k)
 
-					print "Ant " + str(k) + " currOF " + str(currOF)
+					print ("Ant " + str(k) + " currOF " + str(currOF))
 					if currOF < self._currOF:
 						self._currOF = currOF
 						self._currPos = k
@@ -174,10 +174,10 @@ class clsACOSCP:
 				self._objAntColony.restartInformation()
 
 
-			print "Instance "  + self._instanceName + " Best OF " + str(self.getBestOFValue()) 
+			print ("Instance "  + self._instanceName + " Best OF " + str(self.getBestOFValue())) 
 
 		else:
-			print "Error clsACOCSP solveProblem " + " Falta info para resolver el problema."
+			print ("Error clsACOCSP solveProblem " + " Falta info para resolver el problema.")
 
 
 
