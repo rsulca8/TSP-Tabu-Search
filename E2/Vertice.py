@@ -15,5 +15,8 @@ class Vertice():
     def __repr__(self):
         return str(self)
 
+    def __eq__(self,otro):
+        return str(self.getValue()) == str(otro.getValue())
+
 
 

@@ -3,13 +3,25 @@ from Arista import Arista
 import sys
 import re
 import math 
-
+from multipledispatch import dispatch
 class Grafo:
+
+    @dispatch()  
+    def __init__(self):
+        self._A = []
+        self._V = []
+        
+    @dispatch(str)  
+    def __init__(self,archivo):
+        self._A = []
+        self._V = []
+        self.cargarDesdeEUC_2D(archivo)
+        
+    @dispatch(list,list)
     def __init__(self,V:list,A: list):
         self._V = V
         self._A = A
-        self.rellenarAristas() 
-
+        self.rellenarAristas()
 
     def setA(self, A):
         self._A = A
@@ -57,24 +69,35 @@ class Grafo:
         salida = ""
         V = self.getV()
         #Muestra la primera fila con los vertices
-        for i in range(0,len(V)):
-            salida += str(V[i]) + "    "
+        if(len(self.__matrizDistancias) == len(self.getV())):
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
 
-        salida = salida + "\n"
-        for i in V:
-            salida += str(i) + "    "
-            for j in V:
-                indice = self.getCostoArista(Arista(i,j,0))
-                salida += str(self.getA()[indice].getPeso()) + "    "
             salida = salida + "\n"
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
+                for j in range(0,len(V)):
+                    salida += str(self.__matrizDistancias[i][j]) + "    "
+                salida = salida + "\n"
+        else:
+            for i in range(0,len(V)):
+                salida += str(V[i]) + "    "
+
+            salida = salida + "\n"
+            for i in V:
+                salida += str(i) + "    "
+                for j in V:
+                    indice = self.getCostoArista(Arista(i,j,0))
+                    salida += str(self.getA()[indice].getPeso()) + "    "
+                salida = salida + "\n"
         return salida
     
     def nodosConOrigen(self, V):
         salida = []
-        print(str(self._A))
-        for arista in self._A:
-            if(arista.getOrigen() == V):
+        for arista in self.getA():
+            if((arista.tieneOrigen(V)) == True):
                 salida.append(arista)
+                
         return salida
 
     def cargarDesdeMatriz(self,V: list,Matriz: list):
@@ -88,12 +111,77 @@ class Grafo:
                     A.append(aux)
         self._A = A 
        
+    def getMatriz(self):
+        return self.__matrizDistancias
     
-        #Hay un cambio
+    def setMatriz(self, M):
+        self.__matrizDistancias = M
+
+    def cargarDesdeEUC_2D(self,pathArchivo):
+        archivo = open(pathArchivo,"r")
         
-        #Puto el que lee
+        self.__matrizDistancias = []
+        vertices = []
+        aristas = []
+        lineas = archivo.readlines()
+        indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
+        lineaEOF = lineas.index("EOF\n")
+        dim = lineaEOF - indSeccionCoord
+
+
+        #Lista donde irán las coordenadas
+        coordenadas = []
+
+        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
+        for i in range(indSeccionCoord+1, lineaEOF):
+            textoLinea = lineas[i]  
+            textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
+            splitLinea = textoLinea.split(" ") #Divide la línea por " " 
+            coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) 
         
+          #Arma la matriz de distancias
+        for coordRow in coordenadas:
+            fila = []
+            v_origen = Vertice(coordRow[0])
+            vertices.append(v_origen)
+            for coordCol in coordenadas:
+                x1 = float(coordRow[1])
+                y1 = float(coordRow[2])
+                x2 = float(coordCol[1])
+                y2 = float(coordCol[2])
+                dist = distancia(x1,y1,x2,y2)
+                if(dist == 0):
+                    dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
+                fila.append(dist)
+                v_destino = Vertice(coordCol[0])
+                aristas.append(Arista(v_origen,v_destino,dist))
+            self.__matrizDistancias.append(fila)
+            self.setA(aristas)
+            self.setV(vertices)
 
+    def obtenerSolucionVecinoCercano(self,inicio:Vertice):
+        M = self.getMatriz()
+        V = self.getV()
+        A = self.getA()
+        recorrido = []
+        aristasIniciales = self.nodosConOrigen(inicio)
+        while(len(A)!=0):
+            vecinoCercano = self.getAristaMinima(aristasIniciales)
+            recorrido.append(vecinoCercano)
+            for i in aristasIniciales:
+                A.remove(i)
+            aristasIniciales = self.nodosConOrigen(vecinoCercano.getDestino())
+            print(recorrido)
+        #print(recorrido)
 
+    def getAristaMinima(self,listaAristas):
+        minimo = listaAristas[0]
+        for i in listaAristas:
+            if(i.getPeso() < minimo.getPeso()):
+                minimo = i
+        return minimo
 
+#Calcula la distancia euclidea en dos nodos A y B 
+def distancia(x1,y1,x2,y2):
+    return math.sqrt((x1-x2)**2+(y1-y2)**2)
 
