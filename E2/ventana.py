@@ -26,8 +26,12 @@ class Ventana(tk.Tk):
     def menuGrafo(self):
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
         self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
+        self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
+        self.__botonVecinoCercano = tk.Button(self, text = "Solucion Usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
         self.__labelEstadoGrafo.pack(fill=tk.X, padx=40)
         self.__botonMostrarGrafo.pack(fill=tk.X, padx=40)
+        self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
+        self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
 
     def openFile(self):
         self.__nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
@@ -35,12 +39,12 @@ class Ventana(tk.Tk):
         self.__g = Grafo(self.__nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
-        print(self.__g)
+        #print(self.__g)
 
     def mostrarGrafo(self):
         self.__ventanaTabla = tk.Toplevel(self)
         self.__ventanaTabla.title("Grafo Cargado")
-        self.__ventanaTabla.geometry('500x500')
+        self.__ventanaTabla.geometry('600x600')
         
         #vertices_header = tuple(i for i in str(self.__g.getV()[i].getValue()))
         #print(vertices_header)
@@ -49,10 +53,13 @@ class Ventana(tk.Tk):
         M = self.__g.getMatriz()
         for i in range(0,len(M)):
             fila = []
+            fila.append(i+1)
             for j in range(0,len(M)):
                 fila.append(M[i][j])
             tabla.add_row(fila)
         tabla.pack()
+
+        
 
 
 def verticesATupla(V):
