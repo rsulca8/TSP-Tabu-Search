@@ -25,6 +25,7 @@ class Arista():
         return self._peso
 
     def tieneOrigen(self,V):
+        #print(str(V) + " == " + str(self.getOrigen()) +" = " + str(V == self.getOrigen()))
         return (V == self.getOrigen())
     
     def tieneDestino(self,V):
@@ -35,3 +36,4 @@ class Arista():
 
     def __repr__(self):
         return str(self)
+
