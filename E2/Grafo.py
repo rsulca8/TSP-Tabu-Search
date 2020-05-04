@@ -4,6 +4,7 @@ import sys
 import re
 import math 
 from multipledispatch import dispatch
+import copy 
 class Grafo:
 
     @dispatch()  
@@ -97,7 +98,14 @@ class Grafo:
         for arista in self.getA():
             if((arista.tieneOrigen(V)) == True):
                 salida.append(arista)
-                
+
+        return salida
+
+    def nodosConDestino(self, V):
+        salida = []
+        for arista in self.getA():
+            if((arista.tieneDestino(V)) == True):
+                salida.append(arista)
         return salida
 
     def cargarDesdeMatriz(self,V: list,Matriz: list):
@@ -162,23 +170,32 @@ class Grafo:
     def obtenerSolucionVecinoCercano(self,inicio:Vertice):
         M = self.getMatriz()
         V = self.getV()
-        A = self.getA()
+        copiaG = copy.copy(self)
+        
+
         recorrido = []
-        aristasIniciales = self.nodosConOrigen(inicio)
-        while(len(A)!=0):
-            vecinoCercano = self.getAristaMinima(aristasIniciales)
+        visitados = []
+        aristasIniciales = copiaG.nodosConOrigen(inicio)
+        while(len(copiaG.getA())!=0):
+            vecinoCercano = copiaG.getAristaMinima(aristasIniciales)
             recorrido.append(vecinoCercano)
-            for i in aristasIniciales:
-                A.remove(i)
-            aristasIniciales = self.nodosConOrigen(vecinoCercano.getDestino())
-            print(recorrido)
-        #print(recorrido)
+            visitados.append(vecinoCercano.getOrigen())
+            for j in visitados:
+                    aristasIniciales += copiaG.nodosConDestino(j)        
+            for i in (aristasIniciales):
+                if(i in copiaG.getA()):
+                    copiaG.getA().remove(i)
+
+            aristasIniciales = copiaG.nodosConOrigen(vecinoCercano.getDestino())
+
+        return recorrido
 
     def getAristaMinima(self,listaAristas):
         minimo = listaAristas[0]
         for i in listaAristas:
             if(i.getPeso() < minimo.getPeso()):
                 minimo = i
+
         return minimo
 
 #Calcula la distancia euclidea en dos nodos A y B 
