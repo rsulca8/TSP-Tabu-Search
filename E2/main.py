@@ -24,8 +24,8 @@ if __name__ == "__main__":
     print("NODOS CON ORIGEN")
 
     
-    print(g.obtenerSolucionVecinoCercano(V(1)))
-
+    #print(g.obtenerSolucionVecinoCercano(V(1)))
+    print(g)
     #print("grafo g: " + str(g))
     #g1 = G(Vertices,None)
     #g1.cargarDesdeMatriz(Vertices,matriz)

@@ -3,14 +3,15 @@ from Grafo import Grafo
 from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
-
+from tkinter import ttk
 class Ventana(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        self.geometry("300x300")
+        self.geometry("600x300")
         self.titulo()
         self.barraMenus()
         self.menuGrafo()
+        self.vecinoCercano()
     
     def titulo(self):
         self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
@@ -27,11 +28,18 @@ class Ventana(tk.Tk):
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
         self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
         self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
-        self.__botonVecinoCercano = tk.Button(self, text = "Solucion Usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
         self.__labelEstadoGrafo.pack(fill=tk.X, padx=40)
         self.__botonMostrarGrafo.pack(fill=tk.X, padx=40)
-        self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
         self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
+
+
+    def vecinoCercano(self):
+        self.__botonVecinoCercano = tk.Button(self, text = "Solucion Usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
+        self.__botonVecinoCercano = tk.Button(self, text = "Seleccione Vertice Inicial", command=self.mostrarGrafo,state="disabled")
+        self.__comboVerticeInicial = ttk.Combobox(self, state="readonly")
+        self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
+        self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
+        self.__comboVerticeInicial.pack(padx=40)       
 
     def openFile(self):
         self.__nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
@@ -39,7 +47,12 @@ class Ventana(tk.Tk):
         self.__g = Grafo(self.__nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
+        self.__vertices = tuple(self.__g.getV())
+        self.__comboVerticeInicial.configure(values = self.__vertices)
         #print(self.__g)
+
+    def mostrarSolucionVecinoCercano(self): 
+        lista = self.__g.obtenerSolucionVecinoCercano(Vertice(int(self.__comboVerticeInicial.get())))
 
     def mostrarGrafo(self):
         self.__ventanaTabla = tk.Toplevel(self)
@@ -58,8 +71,6 @@ class Ventana(tk.Tk):
                 fila.append(M[i][j])
             tabla.add_row(fila)
         tabla.pack()
-
-        
 
 
 def verticesATupla(V):
