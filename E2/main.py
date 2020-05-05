@@ -13,6 +13,8 @@ if __name__ == "__main__":
     v3 = V(3)
     v4 = V(4)
 
+    str(v1)
+
     a1 = Arista(v1,v2,0)
     a2 = Arista(v2,v1,0)
     a3 = Arista(v2,v3,0)
@@ -23,9 +25,9 @@ if __name__ == "__main__":
     #g.obtenerSolucionVecinoCercano(V(1))
     print("NODOS CON ORIGEN")
 
-    
-    #print(g.obtenerSolucionVecinoCercano(V(1)))
-    print(g)
+    @
+    print(g.obtenerSolucionVecinoCercano(V(1)))
+    #print(g)
     #print("grafo g: " + str(g))
     #g1 = G(Vertices,None)
     #g1.cargarDesdeMatriz(Vertices,matriz)

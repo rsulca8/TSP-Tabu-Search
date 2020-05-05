@@ -78,7 +78,7 @@ class Grafo:
             for i in range(0,len(V)):
                 salida += str(V[i]) + "    "
                 for j in range(0,len(V)):
-                    salida += str(self.__matrizDistancias[i][j]) + "    "
+                    salida += str(round(self.__matrizDistancias[i][j],3)) + "    "
                 salida = salida + "\n"
         else:
             for i in range(0,len(V)):
@@ -168,11 +168,9 @@ class Grafo:
             self.setV(vertices)
 
     def obtenerSolucionVecinoCercano(self,inicio:Vertice):
-        M = self.getMatriz()
-        V = self.getV()
+
         copiaG = copy.copy(self)
         
-
         recorrido = []
         visitados = []
         aristasIniciales = copiaG.nodosConOrigen(inicio)

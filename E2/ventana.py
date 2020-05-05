@@ -4,6 +4,7 @@ from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
 from tkinter import ttk
+
 class Ventana(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
