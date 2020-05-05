@@ -43,5 +43,7 @@ Hace una actualización en nuestro branch local, desde un branch remoto que indi
 git clone -b NombreDeBranch [URL]
 Clona un branch remoto
 
-git push origin -d NombreDeBranch
-Para eliminar una rama del repositorio remoto
+git push origin -d NombreDeBranch  			   |||  git branch -d NombreDeBranch
+Para eliminar una rama del repositorio remoto  |||  Para eliminar una rama del repositorio local
+
+
