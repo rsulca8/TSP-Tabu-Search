@@ -4,25 +4,27 @@ import sys
 import re
 import math 
 from multipledispatch import dispatch
-import copy 
+import copy
+
 class Grafo:
 
-    @dispatch()  
-    def __init__(self):
-        self._A = []
-        self._V = []
+    #@dispatch()  
+    #def __init__(self):
+    #    self._A = []
+    #    self._V = []
         
-    @dispatch(str)  
+    #@dispatch(str)
+      
     def __init__(self,archivo):
         self._A = []
         self._V = []
         self.cargarDesdeEUC_2D(archivo)
         
-    @dispatch(list,list)
-    def __init__(self,V:list,A: list):
-        self._V = V
-        self._A = A
-        self.rellenarAristas()
+    #@dispatch(list,list)
+    #def __init__(self,V:list,A: list):
+    #    self._V = V
+    #    self._A = A
+    #    self.rellenarAristas()
 
     def setA(self, A):
         self._A = A
@@ -36,6 +38,7 @@ class Grafo:
     def getV(self):
         return self._V
 
+    #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
     def contieneA(self,A):
         sigue = True
         i = 0
@@ -125,17 +128,19 @@ class Grafo:
     def setMatriz(self, M):
         self.__matrizDistancias = M
 
+
+    #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
 
         self.__matrizDistancias = []
-        self.__matrizPrueba = []
         vertices = []
         aristas = []
         lineas = archivo.readlines()
+        #Busco la posiciones de..
         indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
         lineaEOF = lineas.index("EOF\n")
-        dim = lineaEOF - indSeccionCoord
+        #dim = lineaEOF - indSeccionCoord #y guardo el tamaño de los datos
 
         #Lista donde irán las coordenadas (vertice, x, y)
         coordenadas = []
@@ -145,19 +150,23 @@ class Grafo:
             textoLinea = lineas[i]  
             textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
             splitLinea = textoLinea.split(" ") #Divide la línea por " " 
-            coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) 
+            coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
         
-          #Arma la matriz de distancias
+        print(coordenadas)
+
+        #Arma la matriz de distancias. Calculo la distancia euclidea
         for coordRow in coordenadas:
             fila = []
-            v_origen = Vertice(coordRow[0])
-            vertices.append(v_origen)
+            v_origen = Vertice(coordRow[0]) #Obtengo V de [[V,x,y], ...]
+            print("\n v_origen:",v_origen)
+            vertices.append(v_origen) #[1]
             for coordCol in coordenadas:
                 x1 = float(coordRow[1])
                 y1 = float(coordRow[2])
                 x2 = float(coordCol[1])
                 y2 = float(coordCol[2])
                 dist = distancia(x1,y1,x2,y2)
+                #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
                 if(dist == 0):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)

@@ -121,7 +121,22 @@ class clsACOSCP:
 
 		return response
 
+'''
+Parametros de ACO:
+iters: nro de iteraciones,
+steps: # de pasos,
+ants: cantidad de hormigas
+alfa: importancia de la informacion heuristica
+beta:
+rho:
 
+currOF: funcion objetivo actual
+
+INFO para las hormigas = {Heuristica, Aprendizaje}
+Heuristica = info especifica del problema. Es estatica. 
+Aprendizaje = feromona = es lo que la Colonia va aprendiendo durante la ejecucion
+feromona = es dinamica
+'''
 	def solveProblem(self):
 		if self.isInfoLoaded()==True:
 
@@ -147,6 +162,7 @@ class clsACOSCP:
 				self._currOF = self._infiniteValue
 				self._currPos = self._invalidValue
 
+				#Me fijo cual es la mejor hormiga
 				for k in range(self.getNbrOfAnts()):
 					self._objAntColony.calculateOFValue(k)
 					currOF = self._objAntColony.getOFValue(k)
@@ -161,8 +177,8 @@ class clsACOSCP:
 				# aplico LS a la mejor hormiga de la iteracion
 
 				self._objAntColony.updatePheromone(self._currPos)
-				# actualiza pheromone la mejor hormiga
-
+				# actualiza pheromone la mejor hormiga. Solamente deposita pheromone la mejor hormiga
+				# la pheromone es dinamica. Es APRENDIZAJE
 				currOF = self._objAntColony.getOFValue(self._currPos)
 
 				if currOF<self.getBestOFValue():
