@@ -25,7 +25,7 @@ if __name__ == "__main__":
     #g.obtenerSolucionVecinoCercano(V(1))
     print("NODOS CON ORIGEN")
 
-    @
+
     print(g.obtenerSolucionVecinoCercano(V(1)))
     #print(g)
     #print("grafo g: " + str(g))

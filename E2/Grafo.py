@@ -6,24 +6,27 @@ import math
 from multipledispatch import dispatch
 import copy 
 class Grafo:
-
+    '''
     @dispatch()  
     def __init__(self):
         self._A = []
         self._V = []
-        
-    @dispatch(str)  
+
+    '''
+
     def __init__(self,archivo):
         self._A = []
         self._V = []
+        self.__matrizDistancias = []
         self.cargarDesdeEUC_2D(archivo)
-        
+
+    '''
     @dispatch(list,list)
     def __init__(self,V:list,A: list):
         self._V = V
         self._A = A
         self.rellenarAristas()
-
+    '''
     def setA(self, A):
         self._A = A
 
@@ -51,11 +54,13 @@ class Grafo:
         sigue = True
         i = 0
         n = len(self.getA())
+        print(self.getA())
         while((sigue == True) and i < n):
             if(self.getA()[i].tieneOrigen(A.getOrigen()) and self.getA()[i].tieneDestino(A.getDestino())):
                 sigue = False
             i+=1
-        return i-1
+        print(i-1)
+        return self.getA()[(i-1)].getPeso()
 
     def rellenarAristas(self):
         A = self._A
@@ -169,8 +174,7 @@ class Grafo:
 
     def obtenerSolucionVecinoCercano(self,inicio:Vertice):
 
-        copiaG = copy.copy(self)
-        
+        copiaG = copy.deepcopy(self)
         recorrido = []
         visitados = []
         aristasIniciales = copiaG.nodosConOrigen(inicio)
@@ -185,7 +189,9 @@ class Grafo:
                     copiaG.getA().remove(i)
 
             aristasIniciales = copiaG.nodosConOrigen(vecinoCercano.getDestino())
-
+        
+        verticeFinal = Arista(vecinoCercano.getOrigen(),inicio,self.getCostoArista(Arista(vecinoCercano.getOrigen(),inicio,0)))
+        recorrido[len(recorrido)-1] = verticeFinal
         return recorrido
 
     def getAristaMinima(self,listaAristas):
