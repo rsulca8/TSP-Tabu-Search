@@ -46,4 +46,6 @@ Clona un branch remoto
 git push origin -d NombreDeBranch  			   |||  git branch -d NombreDeBranch
 Para eliminar una rama del repositorio remoto  |||  Para eliminar una rama del repositorio local
 
+git push -u origin master
 
+git remote add origin [URL]
