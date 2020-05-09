@@ -8,9 +8,9 @@ import copy
 
 class TSP:
     def __init__(self, M: list):
-        self._V = V
-        self._A = []
-        self._G = Grafo()
+        #self._V = V
+        #self._A = []
+        #self._G = Grafo()
         self.__matrizDistancias = []
         
 

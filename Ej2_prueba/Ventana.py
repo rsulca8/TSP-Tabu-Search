@@ -1,8 +1,8 @@
 import tkinter as tk
-from Grafo import Grafo 
+#from Grafo import Grafo 
 import re
 import math
-#from TSP import TSP ahora sii jaja. Pero no me aparece tu microf
+from TSP import TSP
 from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
@@ -14,6 +14,7 @@ class Ventana(tk.Tk):
         self.titulo()
         self.barraMenus()
         self.menuGrafo()
+        self.__matrizDistancias=[]
     
     def titulo(self):
         self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
@@ -48,9 +49,6 @@ class Ventana(tk.Tk):
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
-
-        self.__matrizDistancias = []
-        #vertices = []
         lineas = archivo.readlines()
         #Busco la posiciones de..
         indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
@@ -66,27 +64,25 @@ class Ventana(tk.Tk):
             splitLinea = textoLinea.split(" ") #Divide la línea por " " 
             coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
         
-        #print("Coordenada: ",coordenadas)
         #Arma la matriz de distancias. Calculo la distancia euclidea
         for coordRow in coordenadas:
             fila = []
-            #v_origen = Vertice(coordRow[0]) #Obtengo V de [[V,x,y], ...]
-            #print("\n v_origen:",v_origen)
-            #vertices.append(v_origen) #[1]
+            
             for coordCol in coordenadas:
                 x1 = float(coordRow[1])
                 y1 = float(coordRow[2])
                 x2 = float(coordCol[1])
                 y2 = float(coordCol[2])
                 dist = self.distancia(x1,y1,x2,y2)
+                
                 #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
                 if(dist == 0):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)
-                #v_destino = Vertice(coordCol[0])
-                #aristas.append(Arista(v_origen,v_destino,dist))
+                
             self.__matrizDistancias.append(fila)
         print("Matriz de distancias: ",self.__matrizDistancias)
+        tsp = TSP()
 
 
     def distancia(self, x1,y1,x2,y2):
@@ -180,7 +176,6 @@ class Ventana(tk.Tk):
         '''Return a list of lists, containing the data in the table'''
         matrizDist = []
         vertices = []
-        #aristas = []
 
         for row in range(0, self._nroVertices-1):
             current_row = []
@@ -193,10 +188,10 @@ class Ventana(tk.Tk):
                     current_row.append(float((self._entry[index].get())))
             matrizDist.append(current_row)
             vertices.append(row+1)
-        print("Matriz distancias: ",matrizDist)
+        
+        self.__matrizDistancias=matrizDist
+        print("Matriz distancias: ",self.__matrizDistancias)
         print("Vertices: ",vertices)
-
-        self.__g = Grafo(None, vertices, matrizDist)
 
     def mostrarGrafo(self):
         self.__ventanaTabla = tk.Toplevel(self)
