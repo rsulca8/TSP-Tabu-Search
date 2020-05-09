@@ -6,10 +6,10 @@ if __name__=='__main__':
         
         instanceName='scp41.txt'
 
-        instanceDir='C:\\COSAS SALVADAS\\unsa\\LAS\\Opt - Optimización Concurrente y Paralela\\GONSULAND\\tp3_scp_aco\\instances\\'
-        resultsDir='C:\\COSAS SALVADAS\\unsa\\LAS\\Opt - Optimización Concurrente y Paralela\\GONSULAND\\tp3_scp_aco\\results\\'
+        instanceDir='C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\ACOSCP\\instances\\'
+        resultsDir='C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\ACOSCP\\results\\'
 
-        fileName = '/scp41.txt'
+        fileName = 'scp41.sol'
 
         alpha = 1
         beta = 2

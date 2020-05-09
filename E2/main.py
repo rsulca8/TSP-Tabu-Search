@@ -1,8 +1,7 @@
-from Vertice import Vertice as V
-from Grafo import Grafo as G
-from Arista import Arista
+from Ventana import Ventana
 
 if __name__ == "__main__":
+<<<<<<< HEAD
 
     #Vertices
     #Creación del Grafo
@@ -35,3 +34,6 @@ if __name__ == "__main__":
     #print("Grafo g1: \n" + str(g1))
     
 
+=======
+	V = Ventana()
+>>>>>>> Ej2_prueba

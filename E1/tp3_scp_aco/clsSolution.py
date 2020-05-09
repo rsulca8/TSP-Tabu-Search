@@ -19,7 +19,6 @@ class clsSolution:
 		else:
 			print ("Error clsSolution addValue. Tamanio excedido")
 
-
 	# esto lo uso en lista de filas cubiertas por las columnas
 	def addValueAtPos(self, position, value):
 		if position>=0 and position<self.getSize():

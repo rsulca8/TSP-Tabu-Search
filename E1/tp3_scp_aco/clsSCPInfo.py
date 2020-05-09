@@ -4,7 +4,12 @@ import clsSolution as Solution
 
 class clsSCPInfo:	
 	def __init__(self, invalidValue, infiniteValue):
-		self._rows = 0
+		'''
+		Datos de SCP
+		#Filas, #Columnas, Lista de costos, Lista de filas que cubre
+		
+		'''
+		self._rows = 0 
 		self._cols=0
 
 		self._instanceDir=''
@@ -41,8 +46,16 @@ class clsSCPInfo:
 	def openFile(self):
 		self.initializeInfo()
 		
+		'''
+		2
+		1 2 5 6 9 10
+
+		Fila 2
+		Cubierta por 1, 2, 5, 6, 9 y 10
+		'''
+
 		try:
-			self._myFile=open(self.getFilename(), 'r')
+			self._myFile=open(self.getFilename(), 'r') #leo el nombre del archivo
 
 			linea = self._myFile.readline()
 			self._rows, self._cols = linea.strip().split(" ")
@@ -51,14 +64,13 @@ class clsSCPInfo:
 
 			print (" cols " + str(self._cols) + " rows " + str(self._rows))
 
-
-			self._costList=Solution.clsSolution(self._cols, self._invalidValue)
 			# objeto lista de costos
+			self._costList=Solution.clsSolution(self._cols, self._invalidValue)
 
+			# objeto lista de filas cubiertas por columnas			
 			self._colList=Solution.clsSolution(self._cols, self._invalidValue)
-			# objeto lista de filas cubiertas por columnas
 
-
+			#Leo los costos de cada una de las columnas que tiene mi instancia
 			linea = self._myFile.readline().strip().split(" ")
 			while (len(linea)>1):
 				for i in range(len(linea)):
@@ -66,7 +78,7 @@ class clsSCPInfo:
 
 				linea = self._myFile.readline().strip().split(" ")
 
-
+			#Para cada columna 
 			for j in range(self._cols):
 				self._colList.addValue([])
 				# inicializo la lista de columnas. cada elemento tendra las filas que cubre
@@ -77,6 +89,7 @@ class clsSCPInfo:
 			counter = 0
 			while counter<nbrOfCoverings:
 				linea=self._myFile.readline().strip().split(" ")
+				print(str(linea)+"\n")
 
 				for j in range(len(linea)):
 					#self._colList[int(linea[j])-1].append(row)

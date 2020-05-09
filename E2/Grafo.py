@@ -3,6 +3,7 @@ from Arista import Arista
 import sys
 import re
 import math 
+<<<<<<< HEAD
 from multipledispatch import dispatch
 import copy 
 class Grafo:
@@ -23,19 +24,37 @@ class Grafo:
         self._V = V
         self._A = A
         self.rellenarAristas()
+=======
+import copy
+
+class Grafo:
+    def __init__(self, M: list):
+        self.__V = []
+        self.__A = []
+        self.__matrizDistancias = M
+        self.__costoAsociado = 0
+        self.cargarDesdeMatriz(M)
+>>>>>>> Ej2_prueba
 
     def setA(self, A):
-        self._A = A
+        self.__A = A
 
     def setV(self, V):
-        self._V = V
+        self.__V = V
+
+    def setCostoAsociado(self, costo):
+        self.__costoAsociado = costo
+    
+    def getCostoAsociado(self):
+        return self.__costoAsociado
 
     def getA(self):
-        return self._A
+        return self.__A
 
     def getV(self):
-        return self._V
+        return self.__V
 
+    #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
     def contieneA(self,A):
         sigue = True
         i = 0
@@ -57,9 +76,21 @@ class Grafo:
             i+=1
         return i-1
 
+    def cargaAristas(self):
+        A=[]
+        cantV = len(self.__V)
+        for row in range(1,cantV):
+            for col in range(1, cantV):
+                arista_aux = Arista(row,col,self.__matrizDistancias[row][col])
+                A.append(arista_aux)
+        
+        print("Aristas: \n",A)
+        return A
+    
+    #Nose para que sirve? en q caso se lo utiliza
     def rellenarAristas(self):
-        A = self._A
-        V = self._V
+        A = self.__A
+        V = self.__V
         for i in V:
             for j in V:
                 arista_aux = Arista(i,j,0)
@@ -78,7 +109,11 @@ class Grafo:
             for i in range(0,len(V)):
                 salida += str(V[i]) + "    "
                 for j in range(0,len(V)):
+<<<<<<< HEAD
                     salida += str(round(self.__matrizDistancias[i][j],3)) + "    "
+=======
+                    salida += str(self.__matrizDistancias[i][j]) + "    "
+>>>>>>> Ej2_prueba
                 salida = salida + "\n"
         else:
             for i in range(0,len(V)):
@@ -93,10 +128,11 @@ class Grafo:
                 salida = salida + "\n"
         return salida
     
-    def nodosConOrigen(self, V):
+    def aristasConOrigen(self, V):
         salida = []
         for arista in self.getA():
             if((arista.tieneOrigen(V)) == True):
+<<<<<<< HEAD
                 salida.append(arista)
 
         return salida
@@ -105,9 +141,13 @@ class Grafo:
         salida = []
         for arista in self.getA():
             if((arista.tieneDestino(V)) == True):
+=======
+>>>>>>> Ej2_prueba
                 salida.append(arista)
+
         return salida
 
+<<<<<<< HEAD
     def cargarDesdeMatriz(self,V: list,Matriz: list):
         A = []
         if(1!=1):
@@ -199,4 +239,26 @@ class Grafo:
 #Calcula la distancia euclidea en dos nodos A y B 
 def distancia(x1,y1,x2,y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
+=======
+    def aristasConDestino(self, V):
+        salida = []
+        for arista in self.getA():
+            if((arista.tieneDestino(V)) == True):
+                salida.append(arista)
+        return salida
+    
+    #Cargar las aristas
+    def cargarDesdeMatriz(self, Matriz):
+        for fila in range(0,len(Matriz)):
+            self.__V.append(fila+1)
+            for columna in range(0, len(Matriz[fila])):
+                aux = Arista(self.__V[fila],self.__V[columna],(Matriz[fila][columna]))
+                self.__A.append(aux)
 
+>>>>>>> Ej2_prueba
+
+    def getMatriz(self):
+        return self.__matrizDistancias
+    
+    def setMatriz(self, M):
+        self.__matrizDistancias = M
