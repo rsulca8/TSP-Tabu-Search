@@ -8,134 +8,28 @@ import copy
 
 class TSP:
     def __init__(self, M: list):
-        #self._V = V
-        #self._A = []
-        #self._G = Grafo()
-        self.__matrizDistancias = []
-        
-
-    def setA(self, A):
-        self._A = A
-
-    def setV(self, V):
-        self._V = V
-
-    def getA(self):
-        return self._A
-
-    def getV(self):
-        return self._V
-
-    #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
-    def contieneA(self,A):
-        sigue = True
-        i = 0
-        n = len(self.getA())
-        while((sigue == True) and i < n):
-            if(self.getA()[i].tieneOrigen(A.getOrigen()) and self.getA()[i].tieneDestino(A.getDestino())):
-                sigue = False
-                i=n
-            i+=1
-        return not(sigue)
-
-    def getCostoArista(self, A):
-        sigue = True
-        i = 0
-        n = len(self.getA())
-        while((sigue == True) and i < n):
-            if(self.getA()[i].tieneOrigen(A.getOrigen()) and self.getA()[i].tieneDestino(A.getDestino())):
-                sigue = False
-            i+=1
-        return i-1
-
-    def cargaAristas(self):
-        A=[]
-        cantV = len(self._V)
-        for row in range(1,cantV):
-            for col in range(1, cantV):
-                arista_aux = Arista(row,col,self.__matrizDistancias[row][col])
-                A.append(arista_aux)
-        
-        print("Aristas: \n",A)
-        return A
-    
-    #Nose para que sirve? en q caso se lo utiliza
-    def rellenarAristas(self):
-        A = self._A
-        V = self._V
-        for i in V:
-            for j in V:
-                arista_aux = Arista(i,j,0)
-                if(not(self.contieneA(arista_aux))):
-                    A.append(arista_aux)
-
-    def __str__(self):
-        salida = ""
-        V = self.getV()
-        #Muestra la primera fila con los vertices
-        if(len(self.__matrizDistancias) == len(self.getV())):
-            for i in range(0,len(V)):
-                salida += str(V[i]) + "    "
-
-            salida = salida + "\n"
-            for i in range(0,len(V)):
-                salida += str(V[i]) + "    "
-                for j in range(0,len(V)):
-                    salida += str(self.__matrizDistancias[i][j]) + "    "
-                salida = salida + "\n"
-        else:
-            for i in range(0,len(V)):
-                salida += str(V[i]) + "    "
-
-            salida = salida + "\n"
-            for i in V:
-                salida += str(i) + "    "
-                for j in V:
-                    indice = self.getCostoArista(Arista(i,j,0))
-                    salida += str(self.getA()[indice].getPeso()) + "    "
-                salida = salida + "\n"
-        return salida
-    
-    def nodosConOrigen(self, V):
-        salida = []
-        for arista in self.getA():
-            if((arista.tieneOrigen(V)) == True):
-                salida.append(arista)
-
-        return salida
-
-    def nodosConDestino(self, V):
-        salida = []
-        for arista in self.getA():
-            if((arista.tieneDestino(V)) == True):
-                salida.append(arista)
-        return salida
-
-    def getMatriz(self):
-        return self.__matrizDistancias
-    
-    def setMatriz(self, M):
-        self.__matrizDistancias = M
-
-    def obtenerSolucionVecinoCercano(self,inicio:Vertice):
+       self._G = Grafo(M)   #Grafo original
+       self.__soluciones = []    #Lista de Grafos que corresponden a las soluciones
+  
+    def obtenerSolucionsVecinoCercano(self,inicio:Vertice):
         M = self.getMatriz()
         V = self.getV()
         copiaG = copy.copy(self)
 
         recorrido = []
         visitados = []
-        aristasIniciales = copiaG.nodosConOrigen(inicio)
+        aristasIniciales = copiaG.aristasConOrigen(inicio)
         while(len(copiaG.getA())!=0):
             vecinoCercano = copiaG.getAristaMinima(aristasIniciales)
             recorrido.append(vecinoCercano)
             visitados.append(vecinoCercano.getOrigen())
             for j in visitados:
-                    aristasIniciales += copiaG.nodosConDestino(j)        
+                    aristasIniciales += copiaG.aristasConDestino(j)        
             for i in (aristasIniciales):
                 if(i in copiaG.getA()):
                     copiaG.getA().remove(i)
 
-            aristasIniciales = copiaG.nodosConOrigen(vecinoCercano.getDestino())
+            aristasIniciales = copiaG.aristasConOrigen(vecinoCercano.getDestino())
 
         return recorrido
 
@@ -146,3 +40,108 @@ class TSP:
                 minimo = i
 
         return minimo
+
+'''
+[elementoTabu,tenureActual]
+
+
+'''
+    def tabuSearch():
+        listaTabu = []
+        ADD = []
+        DROP = []
+
+
+    
+    def tabuSearch_1():
+        add 
+
+'''
+[1,2,5,4,6,7,8,9,10,3,1] -> costo1
+[(1,2),(2,5),(5,4),(4,6),(6,7),(7,8),(8,9),(9,10),(10,3),(3,1)] -> costo1
+
+G.nodosConDestino(V(4)) = [(1,4)(2,4)(3,4)]
+[1.get,2,3]
+Solucion
+    solV=[]
+    solA=[]
+    costo1=[]
+
+    def compararSoluciones
+    def 
+
+1->6->3->4->5->2->1
+(1,6) (6,3) (3,4) (4,5) (5,2) (2,1)     #(1,6), (6,3), (2,1) add
+
+1->2->3->4->5->6->1
+(1,2) (2,3) (3,4) (4,5) (5,6) (6,1)     #(2,3), (1,2), (6,1) drop
+1->2    2->3    3->4    4->5
+
+
+sol 
+Iter 0
+1->2->(3->(4)->5)->6->7->8->9->10->1
+
+Iter 1
+1->2->5->
+
+#(2,3) (3,4) (10,1) drop
+#(2,5) (10,3) (3,1) add
+
+1->2->5->6->7->8->9->10->3->1 -> costo1
+
+Iter 2
+1->2->5->6->7->8->9->(10->3)->1 
+1->2->5->6->7->(9->8)->10->3->1  -> costo2
+
+Iter3..
+ALGORITMO MAXI
+1->2->5->6->7->9->8->10->3->1
+1->2->(7)->6->(5)->9->8->10->3->1 -> costo3 
+
+DROP (2,5) (5,6) (6,7) (7,9)
+ADD  (2,7) (7,6) (6,5) (5,9)
+
+                                                                        ADD                  DROP
+#tabu active: 1                             2                       |   
+#1                                                                  |   (2,5) (10,3) (3,1)   (2,3) (3,4) (10,1)
+
+#2            (2,5) (10,3) (3,1)            (2,3) (3,4) (10,1)      |   (9,8)  (7,9) (8,10)  (9,10) (7,8)(8,9)
+
+#3            (9,8) (7,9) (8,10)            (9,10) (7,8)(8,9)       |   
+              (2,3) (3,4) (10,1)
+
+
+                                                                        ADD                  DROP
+#tabu active: 2                             3                       |   
+#1                                                                  |   7                    5
+
+#2            7                             5                       |   8                    3
+
+#3            7 5 8                         3                       |   1                    4
+
+#4            5 8 3 1                       4                       |   7                    2
+
+#5            8 3 1 4                       2                        
+{
+Solucion: 1->2->5->6->7->9->8->10->3->1
+List: {1,2,3,4,5,6,7,8,9,10}
+{8,3,1,4,2} -> ListaTabú
+
+Solucion: 1->2->5->6->7->10->8->9->3->1
+List: {1,2,3,4,5,6,7,8,9,10}
+{3,1,4,2,9,10} -> ListaTabú
+}
+
+Solucion: 1->2->5->6->7->10->8->9->3->1
+List: {(1,2),(2,5),(5,6),(6,7),(7,10),(10,8),(8,9),(9,3),(3,1)}
+{3,1,4,2,9,10} -> ListaTabú '''
+
+'''
+    procedure 2optSwap(route, i, k) {
+        1. take route[0] to route[i-1] and add them in order to new_route
+        2. take route[i] to route[k] and add them in reverse order to new_route
+        3. take route[k+1] to end and add them in order to new_route
+        return new_route;
+'''
+
