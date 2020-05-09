@@ -45,6 +45,7 @@ class Ventana(tk.Tk):
         self.cargarDesdeEUC_2D(nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
+        self.__tsp = (self.__matrizDistancias)
         
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
@@ -188,7 +189,7 @@ class Ventana(tk.Tk):
             vertices.append(row+1)
         
         self.__matrizDistancias=matrizDist
-        self.__tsp=TPS(self.__matrizDistancias)
+        self.__tsp=TSP(self.__matrizDistancias)
         
         print("Matriz distancias: ",self.__matrizDistancias)
         print("Vertices: ",vertices)

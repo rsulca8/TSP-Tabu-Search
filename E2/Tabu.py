@@ -7,13 +7,26 @@ class Tabu:
     def setElemento(self, E):
         self.__elemento = E
     
-    def setTlemento(self, T):
+    def setTenure(self, T):
         self.__tenure = T
         
-    def getElemento():
+    def getElemento(self):
         return self.__elemento
-    def getTenure():
-        return self.__tenure
     
-    def __str__():
-        return 
+    def getTenure(self):
+        return self.__tenure
+
+    def __eq__(self,E):
+        return (self.__elemento == E)
+
+    def __str__(self):
+        return "("+str(self.__elemento)+")"  
+
+    def __repr__(self):
+        return "("+str(self.__elemento)+")"
+    
+    def decrementaT(self):
+        self.__tenure = self.__tenure -1
+    
+    def incrementaT(self):
+        self.__tenure = self.__tenure +1

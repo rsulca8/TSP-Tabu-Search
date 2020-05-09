@@ -1,6 +1,8 @@
 from Vertice import Vertice
 from Arista import Arista
 from Grafo import Grafo
+from Tabu import Tabu
+import random 
 import sys
 import re
 import math 
@@ -10,14 +12,18 @@ class TSP:
     def __init__(self, M: list):
        self._G = Grafo(M)   #Grafo original
        self.__soluciones = []    #Lista de Grafos que corresponden a las soluciones
+       self.__soluciones.append(self.obtenerSolucionsVecinoCercano()) #La primera solucion es la del vecino mas cercano
+       self.__tenureADD = 2 #Mas adelante que se ingrese por ventana
+       self.__tenureDROP = 1 #idem jaja
+       tabuSearch()
   
-    def obtenerSolucionsVecinoCercano(self,inicio:Vertice):
-        M = self.getMatriz()
-        V = self.getV()
-        copiaG = copy.copy(self)
+    def obtenerSolucionsVecinoCercano(self):
+        copiaG = copy.deepcopy(self)
+        inicio = self._G.getVerticeInicio()
 
         recorrido = []
         visitados = []
+        
         aristasIniciales = copiaG.aristasConOrigen(inicio)
         while(len(copiaG.getA())!=0):
             vecinoCercano = copiaG.getAristaMinima(aristasIniciales)
@@ -31,6 +37,7 @@ class TSP:
 
             aristasIniciales = copiaG.aristasConOrigen(vecinoCercano.getDestino())
 
+        g = self.Grafo()
         return recorrido
 
     def getAristaMinima(self,listaAristas):
@@ -40,21 +47,75 @@ class TSP:
                 minimo = i
 
         return minimo
-
-'''
-[elementoTabu,tenureActual]
-
-
-'''
-    def tabuSearch():
-        listaTabu = []
-        ADD = []
+    
+    def tabuSearch_Maxi():
+        lista_tabu = []     #Tiene objetos de la clase Tabu
+        lista_permit = []   #Tiene objetos del tipo vertice
         DROP = []
+        ADD = []
+        Sol_Actual = self.__soluciones[len(self.__soluciones)-1]
+        Sol_Optima = Sol_Actual #Solo para el primer caso 
+        
+        while(condicionParada()):
+            lista_permit = pertenListaTabu(lista_tabu)    #Obtengo la lista de elementos que no son tabu
+            lista_random = random.sample(lista_permit,2)    #Selecciona dos al azar de la lista de permitidos
+            V1 = lista_random[0] #Estos dos elementos son los vertices al azar para el swapp
+            V2 = lista_random[1]
+            Sol_Nueva = Sol_Actual.swapp(V1,V2)
+            self.__soluciones.append(Sol_Nueva)
+            if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
+                Sol_Optima = Sol_Nueva
 
+            ADD = Tabu(V1, self.__tenureADD)   #Elijo mi primer elemento tabu para la proxima iteracion. Para un ADD 
+            DROP = Tabu(V2, self.__tenureDROP) #Igual para un DROP
+            decrementaTenure(lista_tabu)  #Decremento 
+            lista_tabu.append(ADD)
+            lista_tabu.append(DROP)
+                            
+    def pertenListaTabu(self, lista_tabu: list):
+        ListaVertices = self._G.getV
+        lista_permit = []
+        for i in range(0, len(ListaVertices)):
+            E = lista_tabu[i].get
+            if(list)
 
     
-    def tabuSearch_1():
-        add 
+    def decrementaTenure(self, lista_tabu: list):
+        for i in range(0,len(lista_tabu)):
+            lista_tabu[i].decrementaT()
+            t = lista_tabu[i].getTenure()
+            if(t<=0):
+                lista_tabu.pop(i)
+
+    def condicionParada():
+        pass
+
+    def tabuSearch_ale(self):
+        solLocal = self.__soluciones[0]
+        N = solLocal.getGrado()
+        DROP = []
+        ADD = []
+        condicion = True #pensar en condicion
+        while condicion:
+            bandVertice = True
+            while (bandVertice):
+                v2 = solLocal.getV()[random.randint(0,M)]
+                v1 = solLocal.getV()[random.randint(0,M)]
+                solLocal = solLocal.swapVertice(solLocal.getV()[,])
+                bandVertice = ()
+
+
+
+#[elementoTabu,tenureActual] #na era para llamarte, con llamada común, pero no importa, vamos por zoom, ahí mando el link
+#    def tabuSearch():
+        #listaTabu = [] esta lista tabu es como el drop?
+        #ADD = []
+        #DROP = []
+#        pass
+
+#    def tabuSearch_1():
+        #add = []
+#        pass
 
 '''
 [1,2,5,4,6,7,8,9,10,3,1] -> costo1
@@ -123,7 +184,7 @@ ADD  (2,7) (7,6) (6,5) (5,9)
 #4            5 8 3 1                       4                       |   7                    2
 
 #5            8 3 1 4                       2                        
-{
+
 Solucion: 1->2->5->6->7->9->8->10->3->1
 List: {1,2,3,4,5,6,7,8,9,10}
 {8,3,1,4,2} -> ListaTabú
@@ -131,17 +192,8 @@ List: {1,2,3,4,5,6,7,8,9,10}
 Solucion: 1->2->5->6->7->10->8->9->3->1
 List: {1,2,3,4,5,6,7,8,9,10}
 {3,1,4,2,9,10} -> ListaTabú
-}
 
 Solucion: 1->2->5->6->7->10->8->9->3->1
 List: {(1,2),(2,5),(5,6),(6,7),(7,10),(10,8),(8,9),(9,3),(3,1)}
 {3,1,4,2,9,10} -> ListaTabú '''
-
-'''
-    procedure 2optSwap(route, i, k) {
-        1. take route[0] to route[i-1] and add them in order to new_route
-        2. take route[i] to route[k] and add them in reverse order to new_route
-        3. take route[k+1] to end and add them in order to new_route
-        return new_route;
-'''
 
