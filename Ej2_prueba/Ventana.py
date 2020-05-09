@@ -1,5 +1,8 @@
 import tkinter as tk
 from Grafo import Grafo 
+import re
+import math
+#from TSP import TSP ahora sii jaja. Pero no me aparece tu microf
 from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
@@ -18,7 +21,6 @@ class Ventana(tk.Tk):
 
     def barraMenus(self):
         self.__menu = tk.Menu(self)
-        
         self.__menuArchivo = tk.Menu(self.__menu)
         self.__menuArchivo.add_command(label="New File", command=self.newFile)
         self.__menuArchivo.add_separator()
@@ -37,34 +39,164 @@ class Ventana(tk.Tk):
         self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
 
     def openFile(self):
-        self.__nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
-        print(self.__nombreArchivo)
-        self.__g = Grafo(self.__nombreArchivo)
+        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
+        #self.__g = Grafo(self.__nombreArchivo, None, None)
+        self.cargarDesdeEUC_2D(nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
-        #print(self.__g)
+        
+    #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
+    def cargarDesdeEUC_2D(self,pathArchivo):
+        archivo = open(pathArchivo,"r")
 
+        self.__matrizDistancias = []
+        #vertices = []
+        lineas = archivo.readlines()
+        #Busco la posiciones de..
+        indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
+        lineaEOF = lineas.index("EOF\n")
+
+        #Lista donde irán las coordenadas (vertice, x, y)
+        coordenadas = []
+
+        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
+        for i in range(indSeccionCoord+1, lineaEOF):
+            textoLinea = lineas[i]  
+            textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
+            splitLinea = textoLinea.split(" ") #Divide la línea por " " 
+            coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
+        
+        #print("Coordenada: ",coordenadas)
+        #Arma la matriz de distancias. Calculo la distancia euclidea
+        for coordRow in coordenadas:
+            fila = []
+            #v_origen = Vertice(coordRow[0]) #Obtengo V de [[V,x,y], ...]
+            #print("\n v_origen:",v_origen)
+            #vertices.append(v_origen) #[1]
+            for coordCol in coordenadas:
+                x1 = float(coordRow[1])
+                y1 = float(coordRow[2])
+                x2 = float(coordCol[1])
+                y2 = float(coordCol[2])
+                dist = self.distancia(x1,y1,x2,y2)
+                #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
+                if(dist == 0):
+                    dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
+                fila.append(dist)
+                #v_destino = Vertice(coordCol[0])
+                #aristas.append(Arista(v_origen,v_destino,dist))
+            self.__matrizDistancias.append(fila)
+        print("Matriz de distancias: ",self.__matrizDistancias)
+
+
+    def distancia(self, x1,y1,x2,y2):
+        return round(math.sqrt((x1-x2)**2+(y1-y2)**2),2)
+   
+    #Cargo una matriz de forma manual. Ingreso el nro de vertices y verifico
     def newFile(self):
         t=tk.Toplevel()
-        btnCancelar = tk.Button(t, text = "Cancelar", width=30)
-        btnAceptar = tk.Button(t,text = "Aceptar", width=30)
-        for r in range(0, 10):
-            for c in range(0, 10):
-                if(c!=0 and r!=0):
-                    cell = tk.Entry(t, width=10)
-                    cell.grid(row=r, column=c)
-                    if(c<r):
-                        cell.configure(state='disabled')
-                elif(not(c==0 ^ r==0)):
-                    label = tk.Label(t, text=r+c, width=10)
-                    label.grid(row=r, column=c)
+        t.geometry("400x100+350+190")
+
+        label1= tk.Label(t, text="Cantidad de vertices:")
+        label1.grid(row=0)
         
-        btnAceptar.grid(row=11, column=5, columnspan=5)
-        
-        btnCancelar.grid(row=11, column=0, columnspan=5)
-        
+        nroVertices = tk.StringVar()
+        entry1= tk.Entry(t, textvariable=nroVertices)
+        entry1.grid(row=0, column=1)
+
+        #Verifico que sea un valor correcto
+        def verificar():
+            label2= tk.Label(t, text="Debe ser entero mayor que 0")
+            try:
+                cant = nroVertices.get()
+                cant = int(cant)
+                #print(cant)
+                if(cant is None or cant<=0):
+                    label2.grid(row=1,column=0)
+                else:
+                    t.destroy()
+                    self._nroVertices=cant+1 #Defino la cantidad ingresada +1. Para los labels q indican el nro de filas y columnas
+                    self.newFile2()
+            except ValueError:
+                    label2.grid(row=1,column=1)
+
+        button1= tk.Button(t,text='Aceptar', command=verificar)
+        button1.grid(row=0,column=2, padx=4, pady=4)
+
         label = tk.Label(t, text="Nueva ventana")
         label.pack(side="top", fill="both")
+
+    #Cargo los valores de la matriz
+    def newFile2(self):
+        t=tk.Toplevel()
+        self._entry={}
+        
+        #Cancelar: vuelvo a la primera pantalla
+        def exit():
+            t.destroy()
+        
+        def aceptar():
+            self.get()
+            t.destroy()
+
+        btnCancelar = tk.Button(t, text = "Cancelar", width=7, command=exit)
+        btnAceptar = tk.Button(t,text = "Aceptar", width=7,command=aceptar)
+
+        # registra un comando para usar para la validacion
+        vcmd = (self.register(self._validate), "%P")
+
+        for r in range(0, self._nroVertices):
+            for c in range(0, self._nroVertices):
+                if(c!=0 and r!=0):
+                    index = (r-1, c-1)
+                    cell = tk.Entry(t, width=7, validate="key", validatecommand=vcmd)
+                    cell.grid(row=r, column=c, stick="nsew")
+                    if(c==r):
+                        cell.insert(0,99999)
+                    if(c<=r):
+                        cell.configure(state='disabled')
+                    self._entry[index]=cell
+                elif(not(c==0 ^ r==0)):
+                    label = tk.Label(t, text=r+c, width=7)
+                    label.grid(row=r, column=c)
+
+        btnAceptar.grid(row=self._nroVertices+1, column=self._nroVertices//2, columnspan=3)
+        btnCancelar.grid(row=self._nroVertices+1, column=0, columnspan=3)
+
+    #Valida que sea ingrese un numero de tipo float o entero
+    def _validate(self, P):  
+
+        if P.strip() == "":
+            return True
+
+        try:
+            f = float(P)
+        except ValueError:
+            self.bell()
+            return False
+        return True
+
+    def get(self):
+        '''Return a list of lists, containing the data in the table'''
+        matrizDist = []
+        vertices = []
+        #aristas = []
+
+        for row in range(0, self._nroVertices-1):
+            current_row = []
+            for column in range(0, self._nroVertices-1):
+                index = (row, column)
+                if (column<row):
+                    index = (column, row)
+                    current_row.append(float((self._entry[index].get())))
+                else:
+                    current_row.append(float((self._entry[index].get())))
+            matrizDist.append(current_row)
+            vertices.append(row+1)
+        print("Matriz distancias: ",matrizDist)
+        print("Vertices: ",vertices)
+
+        self.__g = Grafo(None, vertices, matrizDist)
 
     def mostrarGrafo(self):
         self.__ventanaTabla = tk.Toplevel(self)
