@@ -3,8 +3,6 @@ import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
 
-
-
 class Table(tk.Frame):
     def __init__(self, parent=None, title="", headers=[], height=10, *args, **kwargs):
         tk.Frame.__init__(self, parent, *args, **kwargs)
