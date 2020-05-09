@@ -21,10 +21,11 @@ if __name__ == "__main__":
     a4 = Arista(v1,v3,0)
 
 
+
+
     print("------------------ CARGAR DESDE MATRIZ --------------------------")
     #g.obtenerSolucionVecinoCercano(V(1))
     print("NODOS CON ORIGEN")
-
 
     print(g.obtenerSolucionVecinoCercano(V(1)))
     #print(g)

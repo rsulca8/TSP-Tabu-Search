@@ -12,7 +12,7 @@ class Ventana(tk.Tk):
         self.titulo()
         self.barraMenus()
         self.menuGrafo()
-        self.vecinoCercano()
+        self.seccionSolucionesIniciales()
     
     def titulo(self):
         self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
@@ -29,18 +29,21 @@ class Ventana(tk.Tk):
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
         self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
         self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
-        self.__labelEstadoGrafo.pack(fill=tk.X, padx=40)
-        self.__botonMostrarGrafo.pack(fill=tk.X, padx=40)
-        self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
+        self.__labelEstadoGrafo.pack()
+        self.__botonMostrarGrafo.pack(fill=tk.X, padx=100)
+        self.__labelObtenerCiclo.pack()
 
 
-    def vecinoCercano(self):
-        self.__botonVecinoCercano = tk.Button(self, text = "Solucion Usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
-        self.__botonVecinoCercano = tk.Button(self, text = "Seleccione Vertice Inicial", command=self.mostrarGrafo,state="disabled")
+
+    def seccionSolucionesIniciales(self):
+        self.__botonVecinoCercano = tk.Button(self, text = "Solucion inicial usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
+        self.__botonAlAzar = tk.Button(self, text = "Solución inicial al azar", command=self.mostrarGrafo,state="disabled")
         self.__comboVerticeInicial = ttk.Combobox(self, state="readonly")
-        self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
+        self.__comboVerticeInicial.pack(padx=40)
         self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
-        self.__comboVerticeInicial.pack(padx=40)       
+        self.__botonAlAzar.pack(fill=tk.X, padx=40)
+        
+               
 
     def openFile(self):
         self.__nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))

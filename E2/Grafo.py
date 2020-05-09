@@ -38,7 +38,12 @@ class Grafo:
 
     def getV(self):
         return self._V
-
+        
+    def getMatriz(self):
+        return self.__matrizDistancias
+    
+    def setMatriz(self, M):
+        self.__matrizDistancias = M
     def contieneA(self,A):
         sigue = True
         i = 0
@@ -124,11 +129,7 @@ class Grafo:
                     A.append(aux)
         self._A = A 
        
-    def getMatriz(self):
-        return self.__matrizDistancias
-    
-    def setMatriz(self, M):
-        self.__matrizDistancias = M
+
 
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
