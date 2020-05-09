@@ -28,7 +28,7 @@ if __name__ == "__main__":
 	print("Aristas de g1 + " + str(g1.getA()))
 
 	
-	g2 = g1.swapVertice(V(2),V(3))
+	g2 = g1.swapVertice(V(3),V(4))
 	print("---------------SWAP---------------------")
 	print("Vertices de g2 + " + str(g2.getV()))
 	print("Aristas de g2 + " + str(g2.getA()))

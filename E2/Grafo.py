@@ -59,7 +59,7 @@ class Grafo:
 
     def cargaAristas(self):
         A=[]
-        cantV = len(selsf.__V)
+        cantV = len(self.__V)
         for row in range(1,cantV):
             for col in range(1, cantV):
                 arista_aux = Arista(row,col,self.__matrizDistancias[row][col])
@@ -177,16 +177,21 @@ class Grafo:
         if(copiaA!=[]):
             for i in copiaA:
                 if i.getOrigen()==v2:
+                    print ("i.getOrigen()==v2")
                     i.setOrigen(v1)
                     i.setPeso(self.__matrizDistancias[self.__V.index(v1)][self.__V.index(i.getDestino())])
-                if i.getDestino()==v2:
+                elif i.getDestino()==v2:
+                    print ("i.getDestino()==v2")
                     i.setDestino(v1)
                     i.setPeso(self.__matrizDistancias[self.__V.index(i.getOrigen())][self.__V.index(v1)])
-            for i in copiaA:
-                if i.getOrigen()==v1:
+                
+                elif i.getOrigen()==v1:
+                    print ("i.getDestino()==v2")
                     i.setOrigen(v2)
                     i.setPeso(self.__matrizDistancias[self.__V.index(v2)][self.__V.index(i.getDestino())])
-                if i.getDestino()==v1:
+                
+                elif i.getDestino()==v1:
+                    print ("i.getDestino()==v1")
                     i.setDestino(v2)
                     i.setPeso(self.__matrizDistancias[self.__V.index(i.getOrigen())][self.__V.index(v2)])
         copiaV[self.__V.index(v1)]=v2

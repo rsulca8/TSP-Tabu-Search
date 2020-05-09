@@ -15,7 +15,7 @@ class TSP:
        self.__soluciones.append(self.obtenerSolucionsVecinoCercano()) #La primera solucion es la del vecino mas cercano
        self.__tenureADD = 2 #Mas adelante que se ingrese por ventana
        self.__tenureDROP = 1 #idem jaja
-       tabuSearch()
+       self.tabuSearch_Maxi()
   
     def obtenerSolucionsVecinoCercano(self):
         copiaG = copy.deepcopy(self)
@@ -48,38 +48,43 @@ class TSP:
 
         return minimo
     
-    def tabuSearch_Maxi():
+    def tabuSearch_Maxi(self):
         lista_tabu = []     #Tiene objetos de la clase Tabu
         lista_permit = []   #Tiene objetos del tipo vertice
         DROP = []
         ADD = []
-        Sol_Actual = self.__soluciones[len(self.__soluciones)-1]
+        Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
-        
-        while(condicionParada()):
-            lista_permit = pertenListaTabu(lista_tabu)    #Obtengo la lista de elementos que no son tabu
+        iterac = 10000
+        while(self.condicionParada(iterac)>=0):
+            lista_permit = self.pertenListaTabu(lista_tabu)    #Obtengo la lista de elementos que no son tabu
             lista_random = random.sample(lista_permit,2)    #Selecciona dos al azar de la lista de permitidos
             V1 = lista_random[0] #Estos dos elementos son los vertices al azar para el swapp
             V2 = lista_random[1]
-            Sol_Nueva = Sol_Actual.swapp(V1,V2)
-            self.__soluciones.append(Sol_Nueva)
-            if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
-                Sol_Optima = Sol_Nueva
-
             ADD = Tabu(V1, self.__tenureADD)   #Elijo mi primer elemento tabu para la proxima iteracion. Para un ADD 
             DROP = Tabu(V2, self.__tenureDROP) #Igual para un DROP
-            decrementaTenure(lista_tabu)  #Decremento 
+            
+            Sol_Nueva = Sol_Actual.swapp(V1,V2)
+            self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
+            if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
+                Sol_Optima = Sol_Nueva  #Actualizo la solucion optima
+            
+            self.decrementaTenure(lista_tabu)  #Decremento el tenure y elimino algunos elementos con tenure igual a 0
             lista_tabu.append(ADD)
             lista_tabu.append(DROP)
+        #return self.__soluciones
                             
     def pertenListaTabu(self, lista_tabu: list):
         ListaVertices = self._G.getV
-        lista_permit = []
+        ListaPermit = []
         for i in range(0, len(ListaVertices)):
-            E = lista_tabu[i].get
-            if(list)
+            EP = ListaVertices[i]
+            for j in range(0, len(lista_tabu)):
+                ET = lista_tabu[j].getElemento()
+                if(EP != ET):
+                    ListaPermit.append(EP)
+        return ListaPermit
 
-    
     def decrementaTenure(self, lista_tabu: list):
         for i in range(0,len(lista_tabu)):
             lista_tabu[i].decrementaT()
@@ -87,23 +92,22 @@ class TSP:
             if(t<=0):
                 lista_tabu.pop(i)
 
-    def condicionParada():
-        pass
+    def condicionParada(self, iter: int):
+        return (iter-1)
 
-    def tabuSearch_ale(self):
-        solLocal = self.__soluciones[0]
-        N = solLocal.getGrado()
-        DROP = []
-        ADD = []
-        condicion = True #pensar en condicion
-        while condicion:
-            bandVertice = True
-            while (bandVertice):
-                v2 = solLocal.getV()[random.randint(0,M)]
-                v1 = solLocal.getV()[random.randint(0,M)]
-                solLocal = solLocal.swapVertice(solLocal.getV()[,])
-                bandVertice = ()
-
+#    def tabuSearch_ale(self):
+#        solLocal = self.__soluciones[0]
+#        N = solLocal.getGrado()
+#        DROP = []
+#        ADD = []
+#        condicion = True #pensar en condicion
+#        while condicion:
+#            bandVertice = True
+#            while (bandVertice):
+#                v2 = solLocal.getV()[random.randint(0,M)]
+#                v1 = solLocal.getV()[random.randint(0,M)]
+#                solLocal = solLocal.swapVertice(solLocal.getV()[,])
+#                bandVertice = ()
 
 
 #[elementoTabu,tenureActual] #na era para llamarte, con llamada común, pero no importa, vamos por zoom, ahí mando el link
