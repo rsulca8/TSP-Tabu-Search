@@ -1,22 +1,18 @@
 from Vertice import Vertice
 from Arista import Arista
+from Grafo import Grafo
 import sys
 import re
 import math 
 import copy
 
-class Grafo:
-    def __init__(self, archivo:str, V:list, M: list):
+class TSP:
+    def __init__(self, M: list):
         self._V = V
         self._A = []
+        self._G = Grafo()
         self.__matrizDistancias = []
-        if (archivo is None):
-            self.__matrizDistancias = M
-            self.cargaAristas()
-        elif (V is None and M is None):
-            self.cargarDesdeEUC_2D(archivo)
-        else:
-            pass
+        
 
     def setA(self, A):
         self._A = A
@@ -115,75 +111,11 @@ class Grafo:
                 salida.append(arista)
         return salida
 
-    def cargarDesdeMatriz(self,V: list,Matriz: list):
-        A = []
-        if(1!=1):
-            print("La cantidad de vertices debe ser la misma que la cantidad de filas de la Matriz")
-        else:
-            for fila in range(0,len(Matriz)):
-                for columna in range(0, len(Matriz[fila])):
-                    aux = Arista(V[fila],V[columna],(Matriz[fila][columna]))
-                    A.append(aux)
-        self._A = A 
-
     def getMatriz(self):
         return self.__matrizDistancias
     
     def setMatriz(self, M):
         self.__matrizDistancias = M
-
-
-    #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
-    def cargarDesdeEUC_2D(self,pathArchivo):
-        archivo = open(pathArchivo,"r")
-
-
-        self.__matrizDistancias = []
-        vertices = []
-        aristas = []
-        lineas = archivo.readlines()
-        #Busco la posiciones de..
-        indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
-        lineaEOF = lineas.index("EOF\n")
-        #dim = lineaEOF - indSeccionCoord #y guardo el tamaño de los datos
-
-        #Lista donde irán las coordenadas (vertice, x, y)
-        coordenadas = []
-
-        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
-        for i in range(indSeccionCoord+1, lineaEOF):
-            textoLinea = lineas[i]  
-            textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
-            splitLinea = textoLinea.split(" ") #Divide la línea por " " 
-            coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
-        
-        print(coordenadas)
-
-        #Arma la matriz de distancias. Calculo la distancia euclidea
-        for coordRow in coordenadas:
-            fila = []
-            v_origen = Vertice(coordRow[0]) #Obtengo V de [[V,x,y], ...]
-            print("\n v_origen:",v_origen)
-            vertices.append(v_origen) #[1]
-            for coordCol in coordenadas:
-                x1 = float(coordRow[1])
-                y1 = float(coordRow[2])
-                x2 = float(coordCol[1])
-                y2 = float(coordCol[2])
-                dist = distancia(x1,y1,x2,y2)
-                #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
-                if(dist == 0):
-                    dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
-                fila.append(dist)
-                v_destino = Vertice(coordCol[0])
-                aristas.append(Arista(v_origen,v_destino,dist))
-            self.__matrizDistancias.append(fila)
-            self.setA(aristas)
-            self.setV(vertices)
-
-        print(aristas)
-        #print(self.__matrizDistancias)
-
 
     def obtenerSolucionVecinoCercano(self,inicio:Vertice):
         M = self.getMatriz()
@@ -214,8 +146,3 @@ class Grafo:
                 minimo = i
 
         return minimo
-
-#Calcula la distancia euclidea en dos nodos A y B 
-def distancia(x1,y1,x2,y2):
-    return math.sqrt((x1-x2)**2+(y1-y2)**2)
-
