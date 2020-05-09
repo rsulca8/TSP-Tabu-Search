@@ -5,7 +5,7 @@ import sys
 import re
 import math 
 import copy
-
+#Rasdfasdfasdfsdfa
 class TSP:
     def __init__(self, M: list):
        self._G = Grafo(M)   #Grafo original

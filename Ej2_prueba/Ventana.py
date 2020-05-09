@@ -82,7 +82,12 @@ class Ventana(tk.Tk):
                 
             self.__matrizDistancias.append(fila)
         print("Matriz de distancias: ",self.__matrizDistancias)
+<<<<<<< HEAD
         self.__tsp = TSP(self.__matrizDistancias)
+=======
+        tsp = TSP() #asdfasdf
+
+>>>>>>> 23357e082f891f0c0f0c3a6b1e6e3f4084f3b4d7
 
     def distancia(self, x1,y1,x2,y2):
         return round(math.sqrt((x1-x2)**2+(y1-y2)**2),2)
