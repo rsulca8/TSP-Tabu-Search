@@ -7,6 +7,7 @@ import sys
 import re
 import math 
 import copy
+import clsTxt
 #Rasdfasdfasdfsdfa
 class TSP:
     def __init__(self, M: list):
@@ -15,16 +16,8 @@ class TSP:
        self.__soluciones = []    #Lista de Grafos que corresponden a las soluciones
        self.__tenureADD = 10 #Mas adelante que se ingrese por ventana
        self.__tenureDROP = 9 #idem jaja
-       self.__txt = open("rdo.txt", "w")
-       self.__st = ""
+       self.__txt = clsTxt("TSP")
        self.tabuSearch()
-
-    def escribe(self, st):
-        self.__st = self.__st + st+"\n"
-    
-    def imprime(self):
-        self.__txt.write(self.__st)
-        self.__txt.close()
   
     def obtenerSolucionsVecinoCercano(self):
         copiaG = copy.deepcopy(self._G)
@@ -49,29 +42,39 @@ class TSP:
         return visitados
     
     def vecinoMasCercano(self, matrizDist: list, pos: int, visitados: list):
-        masCercano = matrizDist[pos][0]
-        for i in range(1, len(matrizDist)-1):
-            if(matrizDist[pos][i]<masCercano and i not in visitados):
-                masCercano = i
-        return masCercano
+        masCercano = matrizDist[pos][pos]
+        indMasCercano = 0
+
+        #print("visitados: "+str(visitados))    
+        for i in range(0, len(matrizDist)):
+            costo = matrizDist[pos][i]
+            #print("Costo: "+str(costo)+" i: "+str(i))
+            if(costo<masCercano and i not in visitados):
+                masCercano = costo
+                indMasCercano = i
+
+        #print("Costo MasCercano: ",matrizDist[pos][indMasCercano])
+        #print("Indice: ",indMasCercano)
+        return indMasCercano
     
-    def obtenerSolucionsVecinoCercano_prueba(self):
+    def obtenerSolucionsVecinoCercano_V2(self):
         copiaG = copy.deepcopy(self._G)
-        inicio = self._G.getVerticeInicio()
+        inicio = self._G.getV()[0]
         matrizDist = self._G.getMatriz()
 
         recorrido = []
         visitados = []
         
-        recorrido.append(inicio)
-        visitados.append(0)
+        recorrido.append(inicio)    #Agrego el vertice inicial
+        visitados.append(0)     #Agrego el vertice inicial
+        masCercano=0
         for i in range(0,len(matrizDist)-1):
-            masCercano = self.vecinoMasCercano(matrizDist,i, visitados)
-            recorrido.append(Vertice(masCercano))
+            masCercano = self.vecinoMasCercano(matrizDist,masCercano, visitados) #obtiene la posicion dela matriz del vecino mas cercano
+            recorrido.append(Vertice(masCercano+1))
             visitados.append(masCercano)
 
         return recorrido
-        
+
     def solucionAlAzar(self):
         inicio = self._G.getVerticeInicio()
         indices_azar = random.sample( range(2,len(self._G.getV())+1), len(self._G.getV())-1)
@@ -86,18 +89,17 @@ class TSP:
     def tabuSearch(self):
         lista_tabu = []     #Tiene objetos de la clase Tabu
         lista_permit = []   #Tiene objetos del tipo vertice
-        salida = ""
         soluciones = []
         g1 = self._G.copy()
         solucionVecinoCercano = self.obtenerSolucionsVecinoCercano() #Obtiene un vector de vértices con el tour del vecino más cercano
         g1.cargarDesdeSecuenciaDeVertices(solucionVecinoCercano) #Carga el recorrido a la solución
         self.__soluciones.append(g1) #Agregar solución inicial
-        self.escribe("############### GRAFO CARGADO #################")
-        self.escribe(str(self._G))
-        self.escribe("################ SOLUCION INICIAL #################")
-        self.escribe("Vertices:        " + str(g1.getV()))
-        self.escribe("Aristas:         " + str(g1.getA()))
-        self.escribe("Costo asociado:  " + str(g1.getCostoAsociado()))
+        self.__txt.escribir("############### GRAFO CARGADO #################")
+        self.__txt.escribir(str(self._G))
+        self.__txt.escribir("################ SOLUCION INICIAL #################")
+        self.__txt.escribir("Vertices:        " + str(g1.getV()))
+        self.__txt.escribir("Aristas:         " + str(g1.getA()))
+        self.__txt.escribir("Costo asociado:  " + str(g1.getCostoAsociado()))
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
         iterac = 100
@@ -112,10 +114,10 @@ class TSP:
             DROP = Tabu(V2, self.__tenureDROP) #Igual para un DROP
             
             Sol_Nueva = Sol_Actual.swapp(V1,V2)
-            self.escribe("################################ " + str(iterac) + " ####################################")
-            self.escribe("Vertices:        " + str(Sol_Nueva.getV()))
-            self.escribe("Aristas:         " + str(Sol_Nueva.getA()))
-            self.escribe("Costo asociado:  " + str(Sol_Nueva.getCostoAsociado())) 
+            self.__txt.escribir("################################ " + str(iterac) + " ####################################")
+            self.__txt.escribir("Vertices:        " + str(Sol_Nueva.getV()))
+            self.__txt.escribir("Aristas:         " + str(Sol_Nueva.getA()))
+            self.__txt.escribir("Costo asociado:  " + str(Sol_Nueva.getCostoAsociado())) 
             
             self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
             if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
@@ -123,18 +125,19 @@ class TSP:
                 
             soluciones.append(Sol_Nueva)
             
-            self.escribe("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
+            self.__txt.escribir("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
             self.decrementaTenure(lista_tabu)  #Decremento el tenure y elimino algunos elementos con tenure igual a 0
             lista_tabu.append(ADD)
             lista_tabu.append(DROP)
-            self.escribe("Lista Tabu: "+ str(lista_tabu))
+            self.__txt.escribir("Lista Tabu: "+ str(lista_tabu))
             lista_permit = []
             iterac -= 1
         
-        self.escribe("################################ Solucion Optima ####################################")
-        self.escribe("Vertices:        " + str(Sol_Optima.getV()))
-        self.escribe("Aristas:         " + str(Sol_Optima.getA()))
-        self.escribe("Costo asociado:  " + str(Sol_Optima.getCostoAsociado()))
+        self.__txt.escribir("################################ Solucion Optima ####################################")
+        self.__txt.escribir("Vertices:        " + str(Sol_Optima.getV()))
+        self.__txt.escribir("Aristas:         " + str(Sol_Optima.getA()))
+        self.__txt.escribir("Costo asociado:  " + str(Sol_Optima.getCostoAsociado()))
+        self.__txt.imprimir()
         
     ###NO SIRVE :S 
     #Soluciones [1,2,3,,5,6]
@@ -152,10 +155,16 @@ class TSP:
                         mejores.append(j)
         return mejores
 
-        
-
-
-    #def solMasLejana(self):#ale
+    def solMasLejana(self, caminos:list, solLocal):
+        dist = len(solLocal) #distancia inicial es la cantidad de aristas
+        listaDistancias = []
+        for i in caminos: #recorre la lista de todos los grafos
+            seqV = i.getV()
+            for i in range(len(seqV)-2): #chequea si hay aristas coincidentes
+                dist = dist - 1 if seqV[seqV.index(solLocal[i])+1]==solLocal[i+1] #si las aristas coinciden se disminuye la distancia
+            dist = dist - 1 if seqV[len(seqV)-1]==solLocal[len(solLocal)-1]:
+            listaDistancias.append([dist, i])
+        return max (listaDistancias)[1] #retorna un grafo
 
     def pertenListaTabu(self, lista_tabu: list):
         ListaPermit = []

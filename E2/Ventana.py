@@ -45,8 +45,7 @@ class Ventana(tk.Tk):
         self.__tsp = TSP(self.__matrizDistancias)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
-        
-        
+                
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
