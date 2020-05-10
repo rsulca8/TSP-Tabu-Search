@@ -5,6 +5,7 @@ import re
 import math 
 import copy
 
+
 class Grafo:
     def __init__(self, M: list):
         self.__V = []
@@ -35,6 +36,18 @@ class Grafo:
     def getV(self):
         return self.__V
 
+    def __lt__(self, otro):
+        return (self.__costoAsociado < otro.__costoAsociado)
+
+    def __le__(self, otro):
+        return (self.__costoAsociado <= otro.__costoAsociado)    
+    
+    def __gt__(self, otro):
+        return (self.__costoAsociado > otro.__costoAsociado)
+
+    def __ge__(self, otro):
+        return (self.__costoAsociado >= otro.__costoAsociado)    
+    
     #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
     def contieneA(self,A):
         sigue = True
@@ -56,6 +69,14 @@ class Grafo:
                 sigue = False
             i+=1
         return i-1
+
+    def getAristaMinima(self,listaAristas):
+        minimo = listaAristas[0]
+        for i in listaAristas:
+            if(i.getPeso() < minimo.getPeso()):
+                minimo = i
+
+        return minimo
 
     def cargaAristas(self):
         A=[]
@@ -84,7 +105,7 @@ class Grafo:
         #Muestra la primera fila con los vertices
         if(len(self.__matrizDistancias) == len(self.getV())):
             for i in range(0,len(V)):
-                salida += str(V[i]) + "    "
+                salida += "     " +  str(V[i]) 
 
             salida = salida + "\n"
             for i in range(0,len(V)):
@@ -152,52 +173,32 @@ class Grafo:
 #    G = G(M)
 #    return G    V
 
-# g.cargarseq([1,3,4,5,8,9,6,7])
-#[1,3,9,5,8,4,6,7]
-# s2 = g.cargarseq([1,3,4,5,8,9,6,7])
-# 
-#       V=[] A=[]
-#       V=[1,3,v2,4,5,8,v1,6,7]
-#       A=[(1,3),(3,v2),()]
-
     def cargarDesdeSecuenciaDeVertices(self,seq:list):
         self.__V = seq
+        rV = [] #Vértices de la matriz ordenados, para obtener la referencia en la matriz de distnacias
+        costo = 0
+        for j in range(0,len(self.getMatriz())):
+            rV.append(Vertice(j+1))
+        #rV = [ V(1),V(2),V(3),V(4),V(5) ]
+        #(1,2,4)(2,5,7)(5,3,6)(3,4,9)(4,1,5)
         for i in range(0,len(seq)-1):
-            self.getA().append(Arista(seq[i],seq[i+1],self.getMatriz()[i][i+1]))
-
+            dist = self.getMatriz()[rV.index(seq[i])][rV.index(seq[i+1])] #Referencias en la matriz
+            self.getA().append(Arista(seq[i], seq[i+1], dist))
+            costo+= dist
+        self.__costoAsociado = costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])]
 
     def copy(self):
         ret = Grafo([])
         ret.setMatriz(self.getMatriz())
         return ret
 
-    def swapVertice(self, v1, v2):
-        copiaA = copy.deepcopy(self.__A)
+    def swapp(self, v1, v2):
         copiaV = copy.deepcopy(self.__V)
-        if(copiaA!=[]):
-            for i in copiaA:
-                if i.getOrigen()==v2:
-                    print ("i.getOrigen()==v2")
-                    i.setOrigen(v1)
-                    i.setPeso(self.__matrizDistancias[self.__V.index(v1)][self.__V.index(i.getDestino())])
-                elif i.getDestino()==v2:
-                    print ("i.getDestino()==v2")
-                    i.setDestino(v1)
-                    i.setPeso(self.__matrizDistancias[self.__V.index(i.getOrigen())][self.__V.index(v1)])
-                
-                elif i.getOrigen()==v1:
-                    print ("i.getDestino()==v2")
-                    i.setOrigen(v2)
-                    i.setPeso(self.__matrizDistancias[self.__V.index(v2)][self.__V.index(i.getDestino())])
-                
-                elif i.getDestino()==v1:
-                    print ("i.getDestino()==v1")
-                    i.setDestino(v2)
-                    i.setPeso(self.__matrizDistancias[self.__V.index(i.getOrigen())][self.__V.index(v2)])
+
         copiaV[self.__V.index(v1)]=v2
         copiaV[self.__V.index(v2)]=v1
+
         gNuevo = Grafo([])
         gNuevo.setMatriz(self.getMatriz())
-        gNuevo.setA(copiaA)
-        gNuevo.setV(copiaV)
+        gNuevo.cargarDesdeSecuenciaDeVertices(copiaV)
         return gNuevo

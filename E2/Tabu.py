@@ -17,13 +17,13 @@ class Tabu:
         return self.__tenure
 
     def __eq__(self,E):
-        return (self.__elemento == E)
+        return (self.getElemento() == E.getElemento())
 
     def __str__(self):
-        return "("+str(self.__elemento)+")"  
+        return "("+str(self.__elemento)+","+str(self.__tenure)+")"  
 
     def __repr__(self):
-        return "("+str(self.__elemento)+")"
+        return "("+str(self.__elemento)+","+str(self.__tenure)+")" 
     
     def decrementaT(self):
         self.__tenure = self.__tenure -1
