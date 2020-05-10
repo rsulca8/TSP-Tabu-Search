@@ -1,5 +1,4 @@
 import tkinter as tk
-#from Grafo import Grafo 
 import re
 import math
 from TSP import TSP
@@ -43,9 +42,10 @@ class Ventana(tk.Tk):
         nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
         #self.__g = Grafo(self.__nombreArchivo, None, None)
         self.cargarDesdeEUC_2D(nombreArchivo)
+        self.__tsp = TSP(self.__matrizDistancias)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
-        
+                
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
@@ -64,6 +64,7 @@ class Ventana(tk.Tk):
             splitLinea = textoLinea.split(" ") #Divide la línea por " " 
             coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
         
+        matriz = []
         #Arma la matriz de distancias. Calculo la distancia euclidea
         for coordRow in coordenadas:
             fila = []
@@ -80,8 +81,8 @@ class Ventana(tk.Tk):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)
                 
-            self.__matrizDistancias.append(fila)
-        print("Matriz de distancias: ",self.__matrizDistancias)
+            matriz.append(fila)
+        self.__matrizDistancias =  matriz
 
     def distancia(self, x1,y1,x2,y2):
         return round(math.sqrt((x1-x2)**2+(y1-y2)**2),2)
@@ -164,7 +165,8 @@ class Ventana(tk.Tk):
             return True
 
         try:
-            f = float(P)
+            if(float(P)==P):
+                print()
         except ValueError:
             self.bell()
             return False
@@ -187,11 +189,11 @@ class Ventana(tk.Tk):
             matrizDist.append(current_row)
             vertices.append(row+1)
         
-        self.__matrizDistancias=matrizDist
-        self.__tsp=TPS(self.__matrizDistancias)
-        
         print("Matriz distancias: ",self.__matrizDistancias)
-        print("Vertices: ",vertices)
+        
+        self.__matrizDistancias=matrizDist
+        self.__tsp=TSP(self.__matrizDistancias)
+        
 
     def mostrarGrafo(self):
         self.__ventanaTabla = tk.Toplevel(self)
