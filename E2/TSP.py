@@ -55,7 +55,8 @@ class TSP:
 
         #print("Costo MasCercano: ",matrizDist[pos][indMasCercano])
         #print("Indice: ",indMasCercano)
-        return indMasCercano
+        return indMasCercano 
+        
     
     def obtenerSolucionsVecinoCercano_V2(self):
         copiaG = copy.deepcopy(self._G)
