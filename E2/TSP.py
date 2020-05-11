@@ -15,8 +15,8 @@ class TSP:
        self._G = Grafo(M)   #Grafo original
        print("Se cargo el archivo")
        self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
-       self.__tenureADD = 13    #Mas adelante que se ingrese por ventana
-       self.__tenureDROP = 10   #idem jaja
+       self.__tenureADD = 7    #Mas adelante que se ingrese por ventana
+       self.__tenureDROP = 6   #idem jaja
        self.__txt = clsTxt(str(nombreArchivo))
        self.tabuSearch()
   
