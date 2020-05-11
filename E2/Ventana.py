@@ -5,6 +5,7 @@ from TSP import TSP
 from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
+import os
 
 class Ventana(tk.Tk):
     def __init__(self):
@@ -42,7 +43,8 @@ class Ventana(tk.Tk):
         nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
         #self.__g = Grafo(self.__nombreArchivo, None, None)
         self.cargarDesdeEUC_2D(nombreArchivo)
-        self.__tsp = TSP(self.__matrizDistancias)
+        self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
+        self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
                 
@@ -56,7 +58,6 @@ class Ventana(tk.Tk):
 
         #Lista donde irán las coordenadas (vertice, x, y)
         coordenadas = []
-
         #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
         for i in range(indSeccionCoord+1, lineaEOF):
             textoLinea = lineas[i]  
@@ -67,8 +68,7 @@ class Ventana(tk.Tk):
         matriz = []
         #Arma la matriz de distancias. Calculo la distancia euclidea
         for coordRow in coordenadas:
-            fila = []
-            
+            fila = []            
             for coordCol in coordenadas:
                 x1 = float(coordRow[1])
                 y1 = float(coordRow[2])
@@ -192,7 +192,7 @@ class Ventana(tk.Tk):
         print("Matriz distancias: ",self.__matrizDistancias)
         
         self.__matrizDistancias=matrizDist
-        self.__tsp=TSP(self.__matrizDistancias)
+        self.__tsp=TSP(self.__matrizDistancias, "MatrizNueva")
         
 
     def mostrarGrafo(self):

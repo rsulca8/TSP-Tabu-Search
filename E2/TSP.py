@@ -11,14 +11,13 @@ from clsTxt import clsTxt
 from time import time
 
 class TSP:
-    def __init__(self, M: list):
+    def __init__(self, M: list, nombreArchivo):
        self._G = Grafo(M)   #Grafo original
        print("Se cargo el archivo")
-       self.__soluciones = []    #Lista de Grafos que corresponden a las soluciones
-       self.__tenureADD = 15 #Mas adelante que se ingrese por ventana
-       self.__tenureDROP = 12 #idem jaja
-       #self.__
-       self.__txt = clsTxt("TSP_prt76")
+       self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
+       self.__tenureADD = 13    #Mas adelante que se ingrese por ventana
+       self.__tenureDROP = 10   #idem jaja
+       self.__txt = clsTxt(str(nombreArchivo))
        self.tabuSearch()
   
     def obtenerSolucionsVecinoCercano(self):
@@ -46,17 +45,13 @@ class TSP:
     def vecinoMasCercano(self, matrizDist: list, pos: int, visitados: list):
         masCercano = matrizDist[pos][pos]
         indMasCercano = 0
-
-        #print("visitados: "+str(visitados))    
+    
         for i in range(0, len(matrizDist)):
             costo = matrizDist[pos][i]
-            #print("Costo: "+str(costo)+" i: "+str(i))
             if(costo<masCercano and i not in visitados):
                 masCercano = costo
                 indMasCercano = i
-
-        #print("Costo MasCercano: ",matrizDist[pos][indMasCercano])
-        #print("Indice: ",indMasCercano)
+        
         return indMasCercano 
 
     
@@ -90,8 +85,9 @@ class TSP:
         return alAzar
 
     def solMasLejana(self, caminos:list, solLocal):
-        dist = len(solLocal) #distancia inicial es la cantidad de aristas
-        listaDistancias = []
+        pass
+        #dist = len(solLocal) #distancia inicial es la cantidad de aristas
+        #listaDistancias = []
         # for i in caminos: #recorre la lista de todos los grafos
             #seqV = i.getV()
             #for i in range(len(seqV)-2): #chequea si hay aristas coincidentes
@@ -100,17 +96,44 @@ class TSP:
             #listaDistancias.append([dist, i])
         #return max (listaDistancias)[1] #retorna un grafo
     
+    def verticesMasCercanos(self, indicesRandom: list, list_permit: list):
+        indices = []
+        indices_permitidos = []
+        matrizDist = self._G.getMatriz()
+        for x in list_permit:
+            indices_permitidos.append(x.getValue())
+
+        for i in range(0, len(indicesRandom)):
+            indices.append(indicesRandom[i])
+            permitidos = list(set(indices_permitidos)-set(indicesRandom))
+            ind = self.vecinoMasCercanoV2(matrizDist,i,permitidos)
+            indices.append(ind)
+            indices_permitidos.remove(ind)
+        return indices
+
+    #Es identica al de arriba solo difiere en el if (.... i in permitidos)
+    def vecinoMasCercanoV2(self, matrizDist: list, pos: int, permitidos: list):
+        masCercano = matrizDist[pos][pos]
+        indMasCercano = 0
+    
+        for i in range(0, len(matrizDist)):
+            costo = matrizDist[pos][i]
+            if(costo<masCercano and i in permitidos):
+                masCercano = costo
+                indMasCercano = i
+        
+        return indMasCercano 
+
     def tabuSearch(self):
         lista_tabu = []     #Tiene objetos de la clase Tabu
         lista_permit = []   #Tiene objetos del tipo vertice
         soluciones = []
         g1 = self._G.copy()
-        solucionAzar = self.solucionAlAzar()
-        print("Al azar: "+ str(solucionAzar))
-        g1.cargarDesdeSecuenciaDeVertices(solucionAzar)
+        #solucionAzar = self.solucionAlAzar()
+        #g1.cargarDesdeSecuenciaDeVertices(solucionAzar)
 
-        #solucionVecinoCercano = self.obtenerSolucionsVecinoCercano_V2() #Obtiene un vector de vértices con el tour del vecino más cercano
-        #g1.cargarDesdeSecuenciaDeVertices(solucionVecinoCercano) #Carga el recorrido a la solución
+        solucionVecinoCercano = self.obtenerSolucionsVecinoCercano_V2() #Obtiene un vector de vértices con el tour del vecino más cercano
+        g1.cargarDesdeSecuenciaDeVertices(solucionVecinoCercano) #Carga el recorrido a la solución
         print("Comenzando Tabu Search")
         self.__soluciones.append(g1) #Agregar solución inicial
         self.__txt.escribir("############### GRAFO CARGADO #################")
@@ -122,21 +145,26 @@ class TSP:
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
         iterac = 1
-        maxIteraciones = 1000
+        maxIteraciones = 5000
         soluciones.append(Sol_Optima)
         tiempoIni = time()
-        nroIntercambios = 6
         while(iterac <= maxIteraciones):
             lista_permit = self.pertenListaTabu(lista_tabu)    #Obtengo la lista de elementos que no son tabu
             ADD = []
             DROP = []
+            nroIntercambios = 8
             if(len(lista_permit)>=2):
                 if(len(lista_permit)<nroIntercambios):
                     nroIntercambios=len(lista_permit)
                     if(nroIntercambios%2!=0):
                         nroIntercambios-=1
                 
-                ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona dos al azar de la lista de permitidos 
+                #ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
+                ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2)) #Con los vecinos mas cercanos
+                #print("Indices random: "+str(ind_random))
+                ind_random = self.verticesMasCercanos(ind_random, lista_permit)
+                #print("Indices random c/los mas cercanos: "+str(ind_random))
+                
                 #Crea los elementos ADD y DROP
                 for i in range(0,len(ind_random)):
                     if(i%2): #Los pares para ADD y los impares para DROP
@@ -173,6 +201,8 @@ class TSP:
         
         tiempoFin = time()
         tiempoTotal = tiempoFin - tiempoIni
+        self.__txt.escribir("\nNro Intercambios: " + str(nroIntercambios) + "           Maximas Iteraciones: "+str(maxIteraciones))
+        self.__txt.escribir("Tenure ADD: " + str(self.__tenureADD) + "           Tenure DROP: "+str(self.__tenureDROP))
         self.__txt.escribir("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
         
         print("Termino!! :)")
