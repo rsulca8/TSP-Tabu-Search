@@ -148,7 +148,7 @@ class TSP:
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
         iterac = 1
-        maxIteraciones = 10000
+        maxIteraciones = 40000
         soluciones.append(Sol_Optima)
         condOptim = False   #En caso de que encontre uno mejor que el optimo lo imprimo
         tiempoIni = time()
@@ -163,12 +163,14 @@ class TSP:
                     nroIntercambios=len(lista_permit)
                     if(nroIntercambios%2!=0):
                         nroIntercambios-=1
-                #ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
-                ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2)) #Con los vecinos mas cercanos
-                #print("Indices random: "+str(ind_random))
-                ind_random = self.verticesMasCercanos(ind_random, lista_permit)
-                #print("Indices random c/los mas cercanos: "+str(ind_random))
-                #print("Lista permitidos "+str(lista_permit))
+                
+                #Al azar
+                ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
+                
+                #Al azar con los vecinos mas cercanos
+                #ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2)) #Con los vecinos mas cercanos
+                #ind_random = self.verticesMasCercanos(ind_random, lista_permit)
+                
                 #Crea los elementos ADD y DROP
                 for i in range(0,len(ind_random)):
                     if(i%2==0): #Los pares para ADD y los impares para DROP
@@ -177,8 +179,6 @@ class TSP:
                         DROP.append(Tabu(lista_permit[ind_random[i]], self.__tenureDROP))
                     
                 #Realiza el intercambio de los vertices seleccionados
-                #print("ADD: "+str(ADD))
-                #print("DROP: "+str(DROP))
                 for i in range(0,len(ADD)):
                     Sol_Nueva = Sol_Optima.swapp(ADD[i].getElemento(), DROP[i].getElemento())
                 
@@ -218,10 +218,10 @@ class TSP:
         self.__txt.escribir("\nNro Intercambios: " + str(nroIntercambios) + "           Maximas Iteraciones: "+str(maxIteraciones))
         self.__txt.escribir("Tenure ADD: " + str(self.__tenureADD) + "           Tenure DROP: "+str(self.__tenureDROP))
         self.__txt.escribir("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
-        
         print("Termino!! :D")
         self.__txt.imprimir()
         print("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
+        
 
     #def 
     ###NO SIRVE :S 
