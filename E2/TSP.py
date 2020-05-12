@@ -97,30 +97,33 @@ class TSP:
         #return max (listaDistancias)[1] #retorna un grafo
     
     def verticesMasCercanos(self, indicesRandom: list, list_permit: list):
-        indices = []
-        indices_permitidos = []
+        indices = []    #Nueva lista de indices permitidos
+        indices_permitidos = [] #Indices permitidos
         matrizDist = self._G.getMatriz()
+        
         for x in list_permit:
-            indices_permitidos.append(x.getValue())
-
+            indices_permitidos.append(x.getValue()) #Se carga con los indices que ocupan en el grafo. Lo mismo que en lista_permit solo que
+            #ahora son indices enteros y no vertices
+        
         for i in range(0, len(indicesRandom)):
             indices.append(indicesRandom[i])
             permitidos = list(set(indices_permitidos)-set(indicesRandom))
             ind = self.vecinoMasCercanoV2(matrizDist,i,permitidos)
             indices.append(ind)
-            indices_permitidos.remove(ind)
+            indices_permitidos.pop(ind)
+        
         return indices
 
     #Es identica al de arriba solo difiere en el if (.... i in permitidos)
     def vecinoMasCercanoV2(self, matrizDist: list, pos: int, permitidos: list):
         masCercano = matrizDist[pos][pos]
         indMasCercano = 0
-    
-        for i in range(0, len(matrizDist)):
-            costo = matrizDist[pos][i]
-            if(costo<masCercano and i in permitidos):
+
+        for ind in permitidos:
+            costo = matrizDist[pos][ind-1]
+            if(costo<masCercano):
                 masCercano = costo
-                indMasCercano = i
+                indMasCercano = permitidos.index(ind)        
         
         return indMasCercano 
 
@@ -145,56 +148,67 @@ class TSP:
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
         iterac = 1
-        maxIteraciones = 5000
+        maxIteraciones = 10000
         soluciones.append(Sol_Optima)
+        condOptim = False   #En caso de que encontre uno mejor que el optimo lo imprimo
         tiempoIni = time()
         while(iterac <= maxIteraciones):
             lista_permit = self.pertenListaTabu(lista_tabu)    #Obtengo la lista de elementos que no son tabu
             ADD = []
             DROP = []
-            nroIntercambios = 8
+            nroIntercambios = 6 #Se vuelve a actualizar al final del while asi q si se cambia aqui. cambiar abajo
+        
             if(len(lista_permit)>=2):
                 if(len(lista_permit)<nroIntercambios):
                     nroIntercambios=len(lista_permit)
                     if(nroIntercambios%2!=0):
                         nroIntercambios-=1
-                
                 #ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
                 ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2)) #Con los vecinos mas cercanos
                 #print("Indices random: "+str(ind_random))
                 ind_random = self.verticesMasCercanos(ind_random, lista_permit)
                 #print("Indices random c/los mas cercanos: "+str(ind_random))
-                
+                #print("Lista permitidos "+str(lista_permit))
                 #Crea los elementos ADD y DROP
                 for i in range(0,len(ind_random)):
-                    if(i%2): #Los pares para ADD y los impares para DROP
-                        ADD.append(Tabu(lista_permit[i], self.__tenureADD))
+                    if(i%2==0): #Los pares para ADD y los impares para DROP
+                        ADD.append(Tabu(lista_permit[ind_random[i]], self.__tenureADD))
                     else:
-                        DROP.append(Tabu(lista_permit[i], self.__tenureDROP))
-
+                        DROP.append(Tabu(lista_permit[ind_random[i]], self.__tenureDROP))
+                    
                 #Realiza el intercambio de los vertices seleccionados
+                #print("ADD: "+str(ADD))
+                #print("DROP: "+str(DROP))
                 for i in range(0,len(ADD)):
-                    Sol_Nueva = Sol_Actual.swapp(ADD[i].getElemento(), DROP[i].getElemento())
-                
-                self.__txt.escribir("################################ " + str(iterac) + " ####################################")
-                self.__txt.escribir("Vertices:        " + str(Sol_Nueva.getV()))
-                self.__txt.escribir("Aristas:         " + str(Sol_Nueva.getA()))
-                self.__txt.escribir("Costo asociado:  " + str(Sol_Nueva.getCostoAsociado())) 
+                    Sol_Nueva = Sol_Optima.swapp(ADD[i].getElemento(), DROP[i].getElemento())
                 
                 self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
                 if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
-                    Sol_Optima = Sol_Nueva  #Actualizo la solucion optima        
-                soluciones.append(Sol_Nueva) #Agrego mi solucion obtenida al vecindario de soluciones
+                    Sol_Optima = Sol_Nueva  #Actualizo la solucion optima
+                    condOptim = True      
                 
-            self.__txt.escribir("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
+                if(iterac%100 == 0 or condOptim):
+                    self.__txt.escribir("################################ " + str(iterac) + " ####################################")
+                    self.__txt.escribir("Vertices:        " + str(Sol_Nueva.getV()))
+                    self.__txt.escribir("Aristas:         " + str(Sol_Nueva.getA()))
+                    self.__txt.escribir("Costo asociado:  " + str(Sol_Nueva.getCostoAsociado()))
+                    condOptim = False 
+                    
+                soluciones.append(Sol_Nueva) #Agrego mi solucion obtenida al vecindario de soluciones
             self.decrementaTenure(lista_tabu)  #Decremento el tenure y elimino algunos elementos con tenure igual a 0
             lista_tabu.extend(ADD)  
             lista_tabu.extend(DROP)  
-            self.__txt.escribir("Lista Tabu: "+ str(lista_tabu))
+            
+            if(iterac%100 == 0 or condOptim):   
+                self.__txt.escribir("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
+                self.__txt.escribir("Lista Tabu: "+ str(lista_tabu))
+                condOptim = False
+            
             lista_permit = []
             iterac += 1
-        
-        self.__txt.escribir("################################ Solucion Optima ####################################")
+            
+        nroIntercambios = 6
+        self.__txt.escribir("\n################################ Solucion Optima ####################################")
         self.__txt.escribir("Vertices:        " + str(Sol_Optima.getV()))
         self.__txt.escribir("Aristas:         " + str(Sol_Optima.getA()))
         self.__txt.escribir("Costo asociado:  " + str(Sol_Optima.getCostoAsociado()))
@@ -205,7 +219,7 @@ class TSP:
         self.__txt.escribir("Tenure ADD: " + str(self.__tenureADD) + "           Tenure DROP: "+str(self.__tenureDROP))
         self.__txt.escribir("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
         
-        print("Termino!! :)")
+        print("Termino!! :D")
         self.__txt.imprimir()
         print("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
 
