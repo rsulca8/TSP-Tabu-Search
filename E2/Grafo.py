@@ -126,6 +126,8 @@ class Grafo:
                 salida = salida + "\n"
         return salida
     
+    def __repr__(self):
+        return str(self.getV) 
     def aristasConOrigen(self, V):
         salida = []
         for arista in self.getA():

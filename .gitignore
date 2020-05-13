@@ -1,36 +1,7 @@
-<<<<<<< HEAD
-#tp3_scp_aco/__pycache__
-#.vscode
-=======
-tp3_scp_aco/__pycache__
-.vscode
-E2/fl1400.tsp
-E2/eil51.tsp.dat
-E2/eil101.tsp
-E2/cinco.py
-E2/GUI/cinco.py
-E2/gr21.dat
-E2/__pycache__/Arista.cpython-36.pyc
 E2/__pycache__/Arista.cpython-37.pyc
+E2/__pycache__/clsTxt.cpython-37.pyc
 E2/__pycache__/Grafo.cpython-37.pyc
-E2/__pycache__/Arista.cpython-36.pyc
-E2/__pycache__/Arista.cpython-37.pyc
-E2/__pycache__/Grafo.cpython-36.pyc
-E2/__pycache__/Grafo.cpython-36.pyc
 E2/__pycache__/Table.cpython-37.pyc
-E2/__pycache__/Grafo.cpython-37.pyc
-E2/__pycache__/Vertice.cpython-36.pyc
-E2/__pycache__/Grafo.cpython-37.pyc
-E2/__pycache__/Grafo.cpython-36.pyc
-E2/__pycache__/Arista.cpython-37.pyc
-E2/__pycache__/Arista.cpython-36.pyc
-E2/__pycache__/Grafo.cpython-36.pyc
-E2/__pycache__/Grafo.cpython-37.pyc
-E2/__pycache__/Grafo.cpython-36.pyc
+E2/__pycache__/TSP.cpython-37.pyc
+E2/__pycache__/Tabu.cpython-37.pyc
 E2/__pycache__/Vertice.cpython-37.pyc
-E2/__pycache__/Arista.cpython-36.pyc
-<<<<<<< HEAD
-E2/__pycache__
-=======
->>>>>>> 39c4fc8ce9d5a477d094cafb2da515b400cb6597
->>>>>>> Ej2_prueba
