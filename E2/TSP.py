@@ -11,15 +11,16 @@ from clsTxt import clsTxt
 from time import time
 
 class TSP:
-    def __init__(self, M: list, nombreArchivo):
-       self._G = Grafo(M)   #Grafo original
-       print("Se cargo el archivo")
-       self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
-       self.__tenureADD = 7    #Mas adelante que se ingrese por ventana
-       self.__tenureDROP = 6   #idem jaja
-       self.__txt = clsTxt(str(nombreArchivo))
-       self.tabuSearch()
-  
+    def __init__(self, M: list, nombreArchivo, importFile):
+        self._G = Grafo(M)   #Grafo original
+        print("Se cargo el archivo")
+        self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
+        self.__tenureADD = 7    #Mas adelante que se ingrese por ventana
+        self.__tenureDROP = 6   #idem jaja
+        self.__txt = clsTxt(str(nombreArchivo))
+        self.__importFile = importFile
+        self.tabuSearch()
+        
     def obtenerSolucionsVecinoCercano(self):
         copiaG = copy.deepcopy(self._G)
         inicio = self._G.getVerticeInicio()
@@ -108,7 +109,7 @@ class TSP:
         for i in range(0, len(indicesRandom)):
             indices.append(indicesRandom[i])
             permitidos = list(set(indices_permitidos)-set(indicesRandom))
-            ind = self.vecinoMasCercanoV2(matrizDist,i,permitidos)
+            ind = self.vecinoMasCercanoV2(matrizDist,indicesRandom[i],permitidos)
             indices.append(ind)
             indices_permitidos.pop(ind)
         
@@ -148,7 +149,7 @@ class TSP:
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
         Sol_Optima = Sol_Actual #Solo para el primer caso 
         iterac = 1
-        maxIteraciones = 40000
+        maxIteraciones = 1000
         soluciones.append(Sol_Optima)
         condOptim = False   #En caso de que encontre uno mejor que el optimo lo imprimo
         tiempoIni = time()
@@ -182,10 +183,11 @@ class TSP:
                 for i in range(0,len(ADD)):
                     Sol_Nueva = Sol_Optima.swapp(ADD[i].getElemento(), DROP[i].getElemento())
                 
-                self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
                 if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
                     Sol_Optima = Sol_Nueva  #Actualizo la solucion optima
-                    condOptim = True      
+                    condOptim = True
+                    self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
+                      
                 
                 if(iterac%100 == 0 or condOptim):
                     self.__txt.escribir("################################ " + str(iterac) + " ####################################")
