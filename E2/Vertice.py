@@ -17,4 +17,6 @@ class Vertice():
 
     def __eq__(self,otro):
         return (str(self.getValue()) == str(otro.getValue()))
-
+    
+    def __ne__(self,otro):
+        return (str(self.getValue()) != str(otro.getValue()))

@@ -99,49 +99,47 @@ class Ventana(tk.Tk):
         
         print("Coordenadas: "+ str(coordenadas))
 
-        matriz=[]
-        recorrido = []
-        for i in range(0,len(coordenadas)):
-            fila = []
-            for j in range(0, len(coordenadas)):
+        #matriz=[]
+        #recorrido = []
+        #for i in range(0,len(coordenadas)):
+        #    fila = []
+        #    for j in range(0, len(coordenadas)):
                 #if()
-                fila.append(coordCol[2])
-            matriz.append(fila)
-
-        print("Matriz: "+str(matriz))
-        for coordRow in coordenadas:
-            fila = []            
-            for coordCol in coordenadas:
-                a = coordRow[0]
-                b = coordCol[1]
-                print("a: "+str(a)+"      b: "+str(b))
-                auxDist = matriz[a][b]
-                matriz[a][b]=matriz[b][a]
-                matriz[b][a]=auxDist
+                #fila.append(coordCol[2])
             #matriz.append(fila)
-            recorrido = Vertice(coordRow[0])
-        print("Matriz: "+str(matriz))
-        self.__matrizDistancias =  matriz
-
+#
+        #print("Matriz: "+str(matriz))
+        #for coordRow in coordenadas:
+        #    fila = []            
+        #    for coordCol in coordenadas:
+        #        a = coordRow[0]
+        #        b = coordCol[1]
+        #        print("a: "+str(a)+"      b: "+str(b))
+        #        auxDist = matriz[a][b]
+        #        matriz[a][b]=matriz[b][a]
+        #        matriz[b][a]=auxDist
+        #    #matriz.append(fila)
+        #    recorrido = Vertice(coordRow[0])
+        #print("Matriz: "+str(matriz))
+        #self.__matrizDistancias =  matriz
 
         #Arma la matriz de distancias. Calculo la distancia euclidea
-        for coordRow in coordenadas:        #[[x1,x2,dist],...]
-            fila = []            
-            for coordCol in coordenadas:
-                x1 = float(coordRow[1])
-                y1 = float(coordRow[2])
-                x2 = float(coordCol[1])
-                y2 = float(coordCol[2])
-                dist = self.distancia(x1,y1,x2,y2)
-                
-                #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
-                if(dist == 0):
-                    dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
-                fila.append(dist)
-                
-            matriz.append(fila)
-        self.__matrizDistancias =  matriz
-
+        #for coordRow in coordenadas:        #[[x1,x2,dist],...]
+        #    fila = []            
+        #    for coordCol in coordenadas:
+        #        x1 = float(coordRow[1])
+        #        y1 = float(coordRow[2])
+        #        x2 = float(coordCol[1])
+        #        y2 = float(coordCol[2])
+        #        dist = self.distancia(x1,y1,x2,y2)
+        #        
+        #        #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
+        #        if(dist == 0):
+        #            dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
+        #        fila.append(dist)
+        #        
+        #    matriz.append(fila)
+        #self.__matrizDistancias =  matriz
 
     def openFile(self):
         nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
@@ -185,7 +183,7 @@ class Ventana(tk.Tk):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)
 
-            print("Fila: "+str(fila))    
+            #print("Fila: "+str(fila))    
             matriz.append(fila)
         self.__matrizDistancias =  matriz
 
@@ -307,7 +305,7 @@ class Ventana(tk.Tk):
         
         #vertices_header = tuple(i for i in str(self.__g.getV()[i].getValue()))
         #print(vertices_header)
-        vertices_header=verticesATupla([Vertice(" ")]+self.__g.getV())
+        vertices_header=self.verticesATupla([Vertice(" ")]+self.__g.getV())
         tabla = Table(self.__ventanaTabla, title="Vertices", headers=vertices_header)
         M = self.__g.getMatriz()
         for i in range(0,len(M)):
@@ -318,13 +316,22 @@ class Ventana(tk.Tk):
             tabla.add_row(fila)
         tabla.pack()   
 
+    def getMatrizDistancas(self):
+        return self.__matrizDistancias
 
-def verticesATupla(V):
-    v = []
-    for i in V:
-        v.append(str(i.getValue()))
-    return v
 
-ventana = Ventana()
+    def verticesATupla(self, V):
+        v = []
+        for i in V:
+            v.append(str(i.getValue()))
+        return v
 
-ventana.mainloop()
+#ventana = Ventana()
+
+#ventana.mainloop()
+if __name__ == "__main__":
+    ventana = Ventana()
+    ventana.cargarDesdeEUC_2D("C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\nuevo\\tp3-tsp-tabusearch-nuevo\\eil101.tsp")
+    #TSP(ventana.getMatrizDistancas(),"/home/rodrigo/Documentos/Git/2/TSP-Tabu-Search/eil50.tsp")
+    TSP(ventana.getMatrizDistancas(),"C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\nuevo\\tp3-tsp-tabusearch-nuevo\\ei101",False)
+#eil101.tsp

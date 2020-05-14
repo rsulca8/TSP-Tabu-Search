@@ -2,53 +2,44 @@
 from Vertice import Vertice as V
 from Grafo import Grafo as G
 from Arista import Arista
-from TSP import TSP
+#from TSP import TSP
 import sys
 import re
 import math 
 import copy
+from Solucion import Solucion 
+from TSP import TSP
 
 if __name__ == "__main__":
 #	V = Ventana()
 
-	matriz = [[999,2,3,5],[2,999,6,2],[7,6,999,8],[2,4,7,999]]
+	matriz = [[999,2,3,5,6,7,8],
+			  [2,999,6,4,2,3,4],
+			  [3,6,999,8,2,6,6],
+			  [5,4,8,999,4,1,3],
+			  [6,2,2,4,999,1,3],
+			  [7,3,6,1,1,999,3],
+			  [8,4,6,3,3,3,999]
+			  ]
 
 	g = G(matriz)
 
-	print("g original \n" + str(g))
+	s1 = Solucion([V(1),V(2),V(3),V(4)],matriz)	#21
+	print(s1)
 
-	
-	g1 = g.copy()
+	tsp = TSP(matriz, "prueba", True)
 
-	print("g1, copia de g \n" + str(g1.getMatriz()))
 
-	print("ahora a g le paso la secuencia")
+#	s2 = Solucion([V(1),V(3),V(2),V(4)],matriz)
+#	s3 = Solucion([V(1),V(2),V(4),V(3)],matriz)
+#	s4 = Solucion([V(1),V(4),V(3),V(2)],matriz)
 
-	g1.cargarDesdeSecuenciaDeVertices([V(1),V(2),V(4),V(3)])
-	print("Vertices de g1  " + str(g1.getV()))
-	print("Aristas de g1  " + str(g1.getA()))
-	print("Costo asociado de g1 + " + str(g1.getCostoAsociado()))
-	print("---------------SWAP---------------------")
-	g2 = g1.swapp(V(2),V(4))
-	print("Vertices de g2  " + str(g2.getV()))
-	print("Aristas de g2  " + str(g2.getA()))
-	print("Costo asociado de g2 + " + str(g2.getCostoAsociado()))
-	
-	print("---------------SWAP---------------------")
-	g3 = g2.swapp(V(3),V(2))
-	print("Vertices de g3  " + str(g3.getV()))
-	print("Aristas de g3  " + str(g3.getA()))
-	print("Costo asociado de g3  " + str(g3.getCostoAsociado()))
 
-	print("---------------SWAP---------------------")
-	g4 = g3.swapp(V(1),V(4))
-	print("Vertices de g4  " + str(g4.getV()))
-	print("Aristas de g4 " + str(g4.getA()))
-	print("Costo asociado de g4  " + str(g4.getCostoAsociado()))
 
-	a=TSP(matriz)
-	print(a.solucionAlAzar())
-	
+		
+
+
+
 
 
 	

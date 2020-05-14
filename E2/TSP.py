@@ -2,6 +2,7 @@ from Vertice import Vertice
 from Arista import Arista
 from Grafo import Grafo
 from Tabu import Tabu
+from Solucion import Solucion
 import random 
 import sys
 import re
@@ -15,12 +16,14 @@ class TSP:
         self._G = Grafo(M)   #Grafo original
         print("Se cargo el archivo")
         self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
+        self.__Sol_Optima = []
         self.__tenureADD = 7    #Mas adelante que se ingrese por ventana
         self.__tenureDROP = 6   #idem jaja
         self.__txt = clsTxt(str(nombreArchivo))
         self.__importFile = importFile
         self.tabuSearch()
         
+  
     def obtenerSolucionsVecinoCercano(self):
         copiaG = copy.deepcopy(self._G)
         inicio = self._G.getVerticeInicio()
@@ -43,6 +46,20 @@ class TSP:
 
         return visitados
     
+    #Para obtener el tabu search granular
+    def vecinoMasCercanoV2(self, matrizDist: list, pos: int, permitidos: list):
+        masCercano = matrizDist[pos][pos]
+        indMasCercano = 0
+
+        for ind in permitidos:
+            costo = matrizDist[pos][ind-1]
+            if(costo<masCercano):
+                masCercano = costo
+                indMasCercano = permitidos.index(ind)        
+        
+        return indMasCercano 
+
+    #Para     
     def vecinoMasCercano(self, matrizDist: list, pos: int, visitados: list):
         masCercano = matrizDist[pos][pos]
         indMasCercano = 0
@@ -54,7 +71,6 @@ class TSP:
                 indMasCercano = i
         
         return indMasCercano 
-
     
     def obtenerSolucionsVecinoCercano_V2(self):
         inicio = self._G.getV()[0]
@@ -72,12 +88,12 @@ class TSP:
             recorrido.append(Vertice(masCercano+1))
             visitados.append(masCercano)
             i
-
         return recorrido
 
     def solucionAlAzar(self):
         inicio = self._G.getVerticeInicio()
         indices_azar = random.sample( range(2,len(self._G.getV())+1), len(self._G.getV())-1)
+        
         alAzar = []
         alAzar.append(inicio)
         for i in indices_azar:
@@ -115,42 +131,59 @@ class TSP:
         
         return indices
 
-    #Es identica al de arriba solo difiere en el if (.... i in permitidos)
-    def vecinoMasCercanoV2(self, matrizDist: list, pos: int, permitidos: list):
-        masCercano = matrizDist[pos][pos]
-        indMasCercano = 0
+    #Te devuelve una nueva solucion inicial cuando se estanca
+    def pathRelinking(self, solInicial, solGuia):
+        i=0
+        band = True
+        elemInicial = None
+        elemGuia = None
+        while (i < len(solGuia) and band):
+            if(not(solInicial[i]==solGuia[i])):
+                elemInicial = solInicial[i]      #[1,4,5,3,2]       [1,4,3,2,5] y elemVertice=5
+                elemGuia = solGuia[i]            #[1,4,3,3,2]       [1,4,3,2,5]
+                band=False
+                print("ElemInicial: "+str(elemInicial))
+                print("ElemGuia   : "+str(elemGuia))
+            i+=1
 
-        for ind in permitidos:
-            costo = matrizDist[pos][ind-1]
-            if(costo<masCercano):
-                masCercano = costo
-                indMasCercano = permitidos.index(ind)        
-        
-        return indMasCercano 
+        print("SolInicial1: "+str(solInicial))
+        if(band):
+            print("Al azar")
+            VerticesAlAzar = self.solucionAlAzar()
+            solInicial.cargarDesdeSecuenciaDeVertices(VerticesAlAzar)
+        else:
+            print("Path relinking!")
+            solInicial.swap(elemInicial, elemGuia)        
+        print("SolInicial2: "+str(solInicial))
 
+        return solInicial
+    
     def tabuSearch(self):
         lista_tabu = []     #Tiene objetos de la clase Tabu
         lista_permit = []   #Tiene objetos del tipo vertice
-        soluciones = []
-        g1 = self._G.copy()
-        #solucionAzar = self.solucionAlAzar()
-        #g1.cargarDesdeSecuenciaDeVertices(solucionAzar)
+        Sol_Actual = []
 
-        solucionVecinoCercano = self.obtenerSolucionsVecinoCercano_V2() #Obtiene un vector de vértices con el tour del vecino más cercano
-        g1.cargarDesdeSecuenciaDeVertices(solucionVecinoCercano) #Carga el recorrido a la solución
+        #A partir del vecino mas cercano
+        solucionVecinoCercano = Solucion([],self._G.getMatriz())
+        solucionVecinoCercano.solucionVecinoCercano() #Obtiene un vector de vértices con el tour del vecino más cercano
+        self.__soluciones.append(solucionVecinoCercano) #Agregar solución inicial
+        
         print("Comenzando Tabu Search")
-        self.__soluciones.append(g1) #Agregar solución inicial
         self.__txt.escribir("############### GRAFO CARGADO #################")
         self.__txt.escribir(str(self._G))
         self.__txt.escribir("################ SOLUCION INICIAL #################")
-        self.__txt.escribir("Vertices:        " + str(g1.getV()))
-        self.__txt.escribir("Aristas:         " + str(g1.getA()))
-        self.__txt.escribir("Costo asociado:  " + str(g1.getCostoAsociado()))
+        self.__txt.escribir(str(solucionVecinoCercano))
+
         Sol_Actual = self.__soluciones[len(self.__soluciones)-1] #Primera solución
-        Sol_Optima = Sol_Actual #Solo para el primer caso 
+        self.__Sol_Optima = Sol_Actual.copy() #Ultima solucion optima obtenida
+        Sol_Inicial = Sol_Actual.copy() #Solucion Inicial, utilizada para el path Relinking
+        Sol_Nueva = Sol_Actual.copy()  #Solucion Nueva obtenida en cada iteracion
         iterac = 1
-        maxIteraciones = 1000
-        soluciones.append(Sol_Optima)
+        maxIteraciones = 5000
+        maxmantenerSolucion = 1000
+        condNoMejora=False  #Si el algoritmo se estanca cambia a True y empieza a utilizar las soluciones iniciales del path relinking
+        subIteracion = 0
+        
         condOptim = False   #En caso de que encontre uno mejor que el optimo lo imprimo
         tiempoIni = time()
         while(iterac <= maxIteraciones):
@@ -165,12 +198,23 @@ class TSP:
                     if(nroIntercambios%2!=0):
                         nroIntercambios-=1
                 
-                #Al azar
-                ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
-                
-                #Al azar con los vecinos mas cercanos
-                #ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2)) #Con los vecinos mas cercanos
-                #ind_random = self.verticesMasCercanos(ind_random, lista_permit)
+                #Path relinkin luego de determinada cantIteraciones en que no hay mejoria
+                if(subIteracion == maxmantenerSolucion):
+                    lista_tabu = []
+                    subIteracion = 0
+                    
+                    print("Nueva solución inicial con path Relinking o al azar")
+                    condNoMejora =True
+                    if(Sol_Inicial != self.__Sol_Optima):
+                        Sol_Inicial = self.pathRelinking(Sol_Inicial,self.__Sol_Optima)
+                    #print("Sol_Inicial_1: "+str(Sol_Inicial.getV()))
+
+                ###########Tabu search al azar con ADD's y DROP's al azar#############
+                #ind_random = random.sample(range(0,len(lista_permit)),nroIntercambios) #Selecciona al azar de la lista de permitidos 
+
+                ###########Con los vecinos cercanos (tabu search granular)#############
+                ind_random = random.sample(range(0,len(lista_permit)),int(nroIntercambios/2))
+                ind_random = self.verticesMasCercanos(ind_random, lista_permit)
                 
                 #Crea los elementos ADD y DROP
                 for i in range(0,len(ind_random)):
@@ -178,56 +222,69 @@ class TSP:
                         ADD.append(Tabu(lista_permit[ind_random[i]], self.__tenureADD))
                     else:
                         DROP.append(Tabu(lista_permit[ind_random[i]], self.__tenureDROP))
-                    
+
                 #Realiza el intercambio de los vertices seleccionados
+                #se decide como será la solución nueva
+                if(subIteracion==0 and iterac!=1):
+                    Sol_Nueva = Sol_Inicial.copy()
+                else:
+                    Sol_Nueva = Sol_Actual.copy()
+                             
+                #swap solución nueva
+                #print("Sol nueva antes " + str(Sol_Nueva.getV()) + " Costo "+ str(Sol_Nueva.getCostoAsociado()))
                 for i in range(0,len(ADD)):
-                    Sol_Nueva = Sol_Optima.swapp(ADD[i].getElemento(), DROP[i].getElemento())
+                    Sol_Nueva.swap(ADD[i].getElemento(), DROP[i].getElemento())
+
+                #self.__txt.escribir("Sol optima "+ str(self.__Sol_Optima.getV()) + " Costo "+str(self.__Sol_Optima.getCostoAsociado()))
+                #self.__txt.escribir"Sol nueva despues " + str(Sol_Nueva.getV()) + " Costo "+ str(Sol_Nueva.getCostoAsociado()))
+                if(Sol_Nueva < self.__Sol_Optima):
+                    self.__Sol_Optima = Sol_Nueva.copy()  #Actualizo la solucion optima
+                    condOptim = True     
+                    print("Esta solución duró " + str(subIteracion)+" iteraciones")
+                    subIteracion=0 
+                    self.__soluciones.append(Sol_Actual) #Cargo las nuevas soluciones
+                elif(condNoMejora):
+                    #Significa que se aplico el pathRelinking y la Sol_Actual debe ser la ultima obtenida
+                    #print("elif: "+str(Sol_Actual.getV()))
+                    Sol_Actual = Sol_Nueva
+                else:
+                    #No se estanco, seguimos aplicando tabu search con la ultima solucion Optima
+                    #print("else: "+str(Sol_Actual.getV()))
+                    Sol_Actual = self.__Sol_Optima
+                #print("SolActual Despue del swap: "+str(Sol_Actual.getV()))
                 
-                if(Sol_Nueva.getCostoAsociado() < Sol_Optima.getCostoAsociado()):
-                    Sol_Optima = Sol_Nueva  #Actualizo la solucion optima
-                    condOptim = True
-                    self.__soluciones.append(Sol_Nueva) #Cargo las nuevas soluciones
-                      
-                
-                if(iterac%100 == 0 or condOptim):
-                    self.__txt.escribir("################################ " + str(iterac) + " ####################################")
-                    self.__txt.escribir("Vertices:        " + str(Sol_Nueva.getV()))
-                    self.__txt.escribir("Aristas:         " + str(Sol_Nueva.getA()))
-                    self.__txt.escribir("Costo asociado:  " + str(Sol_Nueva.getCostoAsociado()))
-                    condOptim = False 
-                    
-                soluciones.append(Sol_Nueva) #Agrego mi solucion obtenida al vecindario de soluciones
+                #print("Inicial: "+str(Sol_Inicial.getV()))
+                #print("Actual:  "+str(Sol_Actual.getV()))
+                #print("Optima : "+str(self.__Sol_Optima.getV()))
+                #Solo en caso de haber mejoría, cargo todo en un archivo txt
+                self.__txt.escribir("################################ " + str(iterac) + " ####################################")
+                self.__txt.escribir(str(Sol_Nueva))
+                condOptim = False 
             self.decrementaTenure(lista_tabu)  #Decremento el tenure y elimino algunos elementos con tenure igual a 0
             lista_tabu.extend(ADD)  
             lista_tabu.extend(DROP)  
+        
+            self.__txt.escribir("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
+            self.__txt.escribir("Lista Tabu: "+ str(lista_tabu))
+            condOptim = False
             
-            if(iterac%100 == 0 or condOptim):   
-                self.__txt.escribir("-+-+-+-+-+-+-+-+-+ Lista TABÚ -+-+-+-+-+-+-+-+-+")
-                self.__txt.escribir("Lista Tabu: "+ str(lista_tabu))
-                condOptim = False
-            
-            lista_permit = []
             iterac += 1
-            
+            subIteracion += 1
         nroIntercambios = 6
+        
         self.__txt.escribir("\n################################ Solucion Optima ####################################")
-        self.__txt.escribir("Vertices:        " + str(Sol_Optima.getV()))
-        self.__txt.escribir("Aristas:         " + str(Sol_Optima.getA()))
-        self.__txt.escribir("Costo asociado:  " + str(Sol_Optima.getCostoAsociado()))
+        self.__txt.escribir(str(self.__Sol_Optima))
         
         tiempoFin = time()
         tiempoTotal = tiempoFin - tiempoIni
         self.__txt.escribir("\nNro Intercambios: " + str(nroIntercambios) + "           Maximas Iteraciones: "+str(maxIteraciones))
         self.__txt.escribir("Tenure ADD: " + str(self.__tenureADD) + "           Tenure DROP: "+str(self.__tenureDROP))
         self.__txt.escribir("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
-        print("Termino!! :D")
+
+        print("Termino!! :)")
         self.__txt.imprimir()
         print("Tiempo total: " + str(int(tiempoTotal/60))+"min "+str(int(tiempoTotal%60))+"seg")
-        
 
-    #def 
-    ###NO SIRVE :S 
-    #Soluciones [1,2,3,,5,6]
     def mejoresSoluciones(self, cantidad, soluciones):
         mejores = []
         for i in soluciones:
@@ -235,14 +292,9 @@ class TSP:
                 mejores.append(i)
             else:
                 for j in mejores:
-                    #print(str(i.getCostoAsociado) +" < " + str(j.getCostoAsociado))
-                    print(i.getCostoAsociado())
-                    print(j.getCostoAsociado())
                     if (i < j):
                         mejores.append(j)
         return mejores
-
-
 
     def pertenListaTabu(self, lista_tabu: list):
         ListaPermit = []
@@ -277,92 +329,3 @@ class TSP:
                 lista_tabu.pop(i)
                 i-=1
             i+=1
-
-    #def decrementaTenure(self, lista_tabu: list):
-
-
-    #def condicionParada(self, iter: int):
-    #    return (iter-1)
-
-
-'''
-[1,2,5,4,6,7,8,9,10,3,1] -> costo1
-[(1,2),(2,5),(5,4),(4,6),(6,7),(7,8),(8,9),(9,10),(10,3),(3,1)] -> costo1
-
-G.nodosConDestino(V(4)) = [(1,4)(2,4)(3,4)]
-[1.get,2,3]
-Solucion
-    solV=[]
-    solA=[]
-    costo1=[]
-
-    def compararSoluciones
-    def 
-
-1->6->3->4->5->2->1
-(1,6) (6,3) (3,4) (4,5) (5,2) (2,1)     #(1,6), (6,3), (2,1) add
-
-1->2->3->4->5->6->1
-(1,2) (2,3) (3,4) (4,5) (5,6) (6,1)     #(2,3), (1,2), (6,1) drop
-1->2    2->3    3->4    4->5
-
-
-sol 
-Iter 0
-1->2->(3->(4)->5)->6->7->8->9->10->1
-
-Iter 1
-1->2->5->
-
-#(2,3) (3,4) (10,1) drop
-#(2,5) (10,3) (3,1) add
-
-1->2->5->6->7->8->9->10->3->1 -> costo1
-
-Iter 2
-1->2->5->6->7->8->9->(10->3)->1 
-1->2->5->6->7->(9->8)->10->3->1  -> costo2
-
-Iter3..
-ALGORITMO MAXI
-1->2->5->6->7->9->8->10->3->1
-1->2->(7)->6->(5)->9->8->10->3->1 -> costo3 
-
-DROP (2,5) (5,6) (6,7) (7,9)
-ADD  (2,7) (7,6) (6,5) (5,9)
-
-                                                                        ADD                  DROP
-#tabu active: 1                             2                       |   
-#1                                                                  |   (2,5) (10,3) (3,1)   (2,3) (3,4) (10,1)
-
-#2            (2,5) (10,3) (3,1)            (2,3) (3,4) (10,1)      |   (9,8)  (7,9) (8,10)  (9,10) (7,8)(8,9)
-
-#3            (9,8) (7,9) (8,10)            (9,10) (7,8)(8,9)       |   
-              (2,3) (3,4) (10,1)
-
-
-                                                                        ADD                  DROP
-#tabu active: 2                             3                       |   
-#1                                                                  |   7                    5
-
-#2            7                             5                       |   8                    3
-
-#3            7 5 8                         3                       |   1                    4
-
-#4            5 8 3 1                       4                       |   7                    2
-
-#5            8 3 1 4                       2                        
-
-Solucion: 1->2->5->6->7->9->8->10->3->1
-List: {1,2,3,4,5,6,7,8,9,10}
-{8,3,1,4,2} -> ListaTabú
-
-Solucion: 1->2->5->6->7->10->8->9->3->1
-List: {1,2,3,4,5,6,7,8,9,10}
-{3,1,4,2,9,10} -> ListaTabú
-
-Solucion: 1->2->5->6->7->10->8->9->3->1
-List: {(1,2),(2,5),(5,6),(6,7),(7,10),(10,8),(8,9),(9,3),(3,1)}
-{3,1,4,2,9,10} -> ListaTabú '''
-
-

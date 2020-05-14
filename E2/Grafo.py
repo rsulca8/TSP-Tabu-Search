@@ -11,7 +11,6 @@ class Grafo:
         self.__V = []
         self.__A = []
         self.__matrizDistancias = M
-        self.__costoAsociado = 0
         self.cargarDesdeMatriz(M)
         self.__grado = 0
 
@@ -24,11 +23,7 @@ class Grafo:
     def setV(self, V):
         self.__V = V
 
-    def setCostoAsociado(self, costo):
-        self.__costoAsociado = costo
-    
-    def getCostoAsociado(self):
-        return self.__costoAsociado
+
 
     def getA(self):
         return self.__A
@@ -36,18 +31,6 @@ class Grafo:
     def getV(self):
         return self.__V
 
-    def __lt__(self, otro):
-        return (self.__costoAsociado < otro.__costoAsociado)
-
-    def __le__(self, otro):
-        return (self.__costoAsociado <= otro.__costoAsociado)    
-    
-    def __gt__(self, otro):
-        return (self.__costoAsociado > otro.__costoAsociado)
-
-    def __ge__(self, otro):
-        return (self.__costoAsociado >= otro.__costoAsociado)    
-    
     #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
     def contieneA(self,A):
         sigue = True
@@ -173,32 +156,5 @@ class Grafo:
 #    G = G(M)
 #    return G    V
 
-    def cargarDesdeSecuenciaDeVertices(self,seq:list):
-        self.__V = seq
-        rV = [] #Vértices de la matriz ordenados, para obtener la referencia en la matriz de distnacias
-        costo = 0
-        for j in range(0,len(self.getMatriz())):
-            rV.append(Vertice(j+1))
-        #rV = [ V(1),V(2),V(3),V(4),V(5) ]
-        #(1,2,4)(2,5,7)(5,3,6)(3,4,9)(4,1,5)
-        for i in range(0,len(seq)-1):
-            dist = self.getMatriz()[rV.index(seq[i])][rV.index(seq[i+1])] #Referencias en la matriz
-            self.getA().append(Arista(seq[i], seq[i+1], dist))
-            costo+= dist
-        self.__costoAsociado = costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])]
 
-    def copy(self):
-        ret = Grafo([])
-        ret.setMatriz(self.getMatriz())
-        return ret
 
-    def swapp(self, v1, v2):
-        copiaV = copy.deepcopy(self.__V)
-
-        copiaV[self.__V.index(v1)]=v2
-        copiaV[self.__V.index(v2)]=v1
-
-        gNuevo = Grafo([])
-        gNuevo.setMatriz(self.getMatriz())
-        gNuevo.cargarDesdeSecuenciaDeVertices(copiaV)
-        return gNuevo
