@@ -1,5 +1,5 @@
 NAME : pr76
-COMMENT : 76-city problem (Padberg/Rinaldi)
+COMMENT : 76-city problem (Padberg/Rinaldi) (108159)
 TYPE : TSP
 DIMENSION : 76
 EDGE_WEIGHT_TYPE : EUC_2D

@@ -1,5 +1,5 @@
 NAME : eil101
-COMMENT : 101-city problem (Christofides/Eilon)
+COMMENT : 101-city problem (Christofides/Eilon) (Length 629)
 TYPE : TSP
 DIMENSION : 101
 EDGE_WEIGHT_TYPE : EUC_2D

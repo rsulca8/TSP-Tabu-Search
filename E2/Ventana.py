@@ -15,7 +15,7 @@ class Ventana(tk.Tk):
         self.barraMenus()
         self.menuGrafo()
         self.__matrizDistancias=[]
-    
+        
     def titulo(self):
         self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
         self.__labelTitulo.pack()
@@ -32,6 +32,7 @@ class Ventana(tk.Tk):
         self.config(menu = self.__menu)
     
     def menuGrafo(self):
+        self.__nb = tk.ttk.Notebook(self)
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
         self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
         self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
@@ -107,7 +108,6 @@ class Ventana(tk.Tk):
                 #if()
                 #fila.append(coordCol[2])
             #matriz.append(fila)
-#
         #print("Matriz: "+str(matriz))
         #for coordRow in coordenadas:
         #    fila = []            
@@ -319,7 +319,6 @@ class Ventana(tk.Tk):
     def getMatrizDistancas(self):
         return self.__matrizDistancias
 
-
     def verticesATupla(self, V):
         v = []
         for i in V:
@@ -327,11 +326,9 @@ class Ventana(tk.Tk):
         return v
 
 #ventana = Ventana()
-
 #ventana.mainloop()
-if __name__ == "__main__":
-    ventana = Ventana()
-    ventana.cargarDesdeEUC_2D("C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\nuevo\\tp3-tsp-tabusearch-nuevo\\eil101.tsp")
-    #TSP(ventana.getMatrizDistancas(),"/home/rodrigo/Documentos/Git/2/TSP-Tabu-Search/eil50.tsp")
-    TSP(ventana.getMatrizDistancas(),"C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\nuevo\\tp3-tsp-tabusearch-nuevo\\ei101",False)
-#eil101.tsp
+#if __name__ == "__main__":
+#    ventana = Ventana()
+#    ventana.cargarDesdeEUC_2D("C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp")
+#    #TSP(ventana.getMatrizDistancas(),"/home/rodrigo/Documentos/Git/2/TSP-Tabu-Search/eil50.tsp")
+#    TSP(ventana.getMatrizDistancas(),"C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp",False)

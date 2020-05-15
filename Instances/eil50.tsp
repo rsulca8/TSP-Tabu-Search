@@ -27,7 +27,10 @@ NODE_COORD_SECTION
 21 45 20
 22 45 10
 23 55 5
+<<<<<<< HEAD:eil50.tsp
 24 65 35
 25 65 20
 26 45 30
+=======
+>>>>>>> 4b80ee8... Condicion de parada con tiempo:Instances/eil50.tsp
 EOF

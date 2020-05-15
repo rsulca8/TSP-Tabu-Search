@@ -3,11 +3,9 @@ from Vertice import Vertice
 from Arista import Arista
 import copy
 import random
-from time import time
 class Solucion(Grafo):
+    
     def __init__(self, secuencia: list, M):
-        self.__V = []
-        self.__A = []
         super(Solucion, self).__init__(M)
         self.__costoAsociado = 0
         if(len(secuencia) == 0 ):
@@ -17,20 +15,14 @@ class Solucion(Grafo):
             self.__A = []
             self.cargarDesdeSecuenciaDeVertices(secuencia)
 
-    def __getitem__(self, key):
-        return self.__V[key]
+    #def __getitem__(self, key): para definir después
+        
 
     def __str__(self):
-        return "Vértices de la solución: " + str(self.__V) +"\nAristas de la solución: "+ str(self.getA()) + " \nCosto Asociado: " + str(self.__costoAsociado)
+        return "Recorrido de la solución: " + str(self.getV()) + "\n" + "Aristas de la solución: "+ str(self.getA()) + " \nCosto Asociado: " + str(self.__costoAsociado)
 
     def __repr__(self):
         return str(self.getV())
-
-    def setCostoAsociado(self, costo):
-        self.__costoAsociado = costo
-    
-    def getCostoAsociado(self):
-        return self.__costoAsociado
 
     def __eq__(self, otro):
         return (self.__costoAsociado == otro.__costoAsociado)
@@ -40,7 +32,6 @@ class Solucion(Grafo):
     
     def __gt__(self, otro):
         return self.__costoAsociado > otro.__costoAsociado
-    
     def __lt__(self, otro):
         return self.__costoAsociado < otro.__costoAsociado
     def __ge__(self, otro):
@@ -52,25 +43,17 @@ class Solucion(Grafo):
     def __len__(self):
         return len(self.__V)
 
-    def copy(self):
-        S = Solucion(copy.deepcopy(self.getV()),self.getMatriz())
-        return S
-
-    def setA(self, A):
-        self.__A = A
-
-    def setV(self, V):
-        self.__V = V
-
     def getA(self):
         return self.__A
 
     def getV(self):
         return self.__V
-
+    
+    def copy(self):
+        return copy.deepcopy(self)
 
     def cargarDesdeSecuenciaDeVertices(self,seq:list):
-        self.setV(seq)
+        self.__V = seq
         self.__A = []
         rV = [] #Vértices de la matriz ordenados, para obtener la referencia en la matriz de distnacias
         costo = 0
@@ -82,19 +65,16 @@ class Solucion(Grafo):
         #(1,2,4)(2,5,7)(5,3,6)(3,4,9)(4,1,5)
         for i in range(0,len(seq)-1):
             dist = self.getMatriz()[rV.index(seq[i])][rV.index(seq[i+1])] #Referencias en la matriz
-            self.getA().append(Arista(seq[i], seq[i+1], dist))
+            self.__A.append(Arista(seq[i], seq[i+1], dist))
             costo+= dist
-        self.setCostoAsociado(costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])])
+        self.__costoAsociado = costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])]
 
     def swap(self, v1, v2):
-        VA1 = self.getV().index(v1)
-        VA2 = self.getV().index(v2)
-        self.getV()[VA1]=v2
-        self.getV()[VA2]=v1
-        self.cargarDesdeSecuenciaDeVertices(self.getV())
-        
+        V = copy.deepcopy(self.__V)
+        V[self.__V.index(v1)]=v2
+        V[self.__V.index(v2)]=v1
+        self.cargarDesdeSecuenciaDeVertices(V)
 
-        
     def solucionVecinoCercano(self):
         inicio = self.__V[0]
         matrizDist = self.getMatriz()
@@ -132,5 +112,3 @@ class Solucion(Grafo):
             alAzar.append(Vertice(i))
         self.cargarDesdeSecuenciaDeVertices(alAzar)
 
-
-                

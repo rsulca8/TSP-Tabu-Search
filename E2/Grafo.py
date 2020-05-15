@@ -5,31 +5,47 @@ import re
 import math 
 import copy
 
-
 class Grafo:
     def __init__(self, M: list):
-        self.__V = []
-        self.__A = []
-        self.__matrizDistancias = M
+        self._V = []
+        self._A = []
+        self._matrizDistancias = M
+        self.__costoAsociado = 0
         self.cargarDesdeMatriz(M)
-        self.__grado = 0
+        self._grado = 0
 
     def getGrado(self):
-        return self.__grado
+        return self._grado
 
     def setA(self, A):
-        self.__A = A
+        self._A = A
 
     def setV(self, V):
-        self.__V = V
+        self._V = V
 
-
+    def getCostoAsociado(self):
+        return self.__costoAsociado
 
     def getA(self):
-        return self.__A
+        return self._A
 
     def getV(self):
-        return self.__V
+        return self._V
+
+    def __lt__(self, otro):
+        return (self.__costoAsociado < otro.__costoAsociado)
+
+    def __le__(self, otro):
+        return (self.__costoAsociado <= otro.__costoAsociado)    
+    
+    def __gt__(self, otro):
+        return (self.__costoAsociado > otro.__costoAsociado)
+
+    def __ge__(self, otro):
+        return (self.__costoAsociado >= otro.__costoAsociado)    
+    
+    def __eq__(self, other):
+        return (self.__class__ == other.__class__ and self.__costoAsociado == other.__costoAsociado)
 
     #Compara entre 2. Se fija si hay aristas de A contenidas en si misma. Si hay aristas, se detiene
     def contieneA(self,A):
@@ -63,10 +79,10 @@ class Grafo:
 
     def cargaAristas(self):
         A=[]
-        cantV = len(self.__V)
+        cantV = len(self._V)
         for row in range(1,cantV):
             for col in range(1, cantV):
-                arista_aux = Arista(row,col,self.__matrizDistancias[row][col])
+                arista_aux = Arista(row,col,self._matrizDistancias[row][col])
                 A.append(arista_aux)
         
         print("Aristas: \n",A)
@@ -74,8 +90,8 @@ class Grafo:
     
     #Nose para que sirve? en q caso se lo utiliza
     def rellenarAristas(self):
-        A = self.__A
-        V = self.__V
+        A = self._A
+        V = self._V
         for i in V:
             for j in V:
                 arista_aux = Arista(i,j,0)
@@ -86,7 +102,7 @@ class Grafo:
         salida = ""
         V = self.getV()
         #Muestra la primera fila con los vertices
-        if(len(self.__matrizDistancias) == len(self.getV())):
+        if(len(self._matrizDistancias) == len(self.getV())):
             for i in range(0,len(V)):
                 salida += "     " +  str(V[i]) 
 
@@ -94,7 +110,7 @@ class Grafo:
             for i in range(0,len(V)):
                 salida += str(V[i]) + "    "
                 for j in range(0,len(V)):
-                    salida += str(self.__matrizDistancias[i][j]) + "    "
+                    salida += str(self._matrizDistancias[i][j]) + "    "
                 salida = salida + "\n"
         else:
             for i in range(0,len(V)):
@@ -129,34 +145,53 @@ class Grafo:
     #Cargar las aristas
     def cargarDesdeMatriz(self, Matriz):
         for fila in range(0,len(Matriz)):
-            self.__V.append(Vertice(fila+1))    #V = [1,2,3,4,5]; V=[1,3,4] A=[(1,3)(3,4)] => sol 1->3->4->5->2
+            self._V.append(Vertice(fila+1))    #V = [1,2,3,4,5]; V=[1,3,4] A=[(1,3)(3,4)] => sol 1->3->4->5->2
         for fila in range(0,len(Matriz)):
             for columna in range(0, len(Matriz[fila])):
-                aux = Arista(self.__V[fila],self.__V[columna],(Matriz[fila][columna]))
-                self.__A.append(aux)
+                aux = Arista(self._V[fila],self._V[columna],(Matriz[fila][columna]))
+                self._A.append(aux)
 
     def getVerticeInicio(self):
-        return self.__A[0].getOrigen()
+        return self._A[0].getOrigen()
 
     def getMatriz(self):
-        return self.__matrizDistancias
+        return self._matrizDistancias
     
     def setMatriz(self, M):
-        self.__matrizDistancias = M
+        self._matrizDistancias = M
 
-#Para que cargue desde una secuencia de vertices por ej. s1= [1,3,4,5,8,9,6,7] -> s2=[1,3,9,5,8,4,6,7]
-#(1,3)(3,4)(4,5)(5,8),(8,9)(9,6)(6,7),(7,1)  
-#(1,3)(3,9)(9,5)(5,8),(8,4)(4,6)(6,7),(7,1)  
-#Sol vecino mas cercano
-#    V = [1,2,3,4,5,6]
-#    A = [(1,2)(2,3)(3,4)(4,5)(5,6)]
+    #Para que cargue desde una secuencia de vertices por ej. s1= [1,3,4,5,8,9,6,7] -> s2=[1,3,9,5,8,4,6,7]
+    def cargarDesdeSecuenciaDeVertices(self,seq:list):
+        self._V = seq
+        rV = [] #Vértices de la matriz ordenados, para obtener la referencia en la matriz de distnacias
+        costo = 0
+        for j in range(0,len(self.getMatriz())):
+            rV.append(Vertice(j+1))
+        
+        for i in range(0,len(seq)-1):
+            dist = self.getMatriz()[rV.index(seq[i])][rV.index(seq[i+1])] #Referencias en la matriz
+            self.getA().append(Arista(seq[i], seq[i+1], dist))
+            costo+= dist
+        self.__costoAsociado = costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])]
 
-# g = G(M)
-# s1 = g.copy()
-# s1.cargarDesdeSecuenciaDeVertices([1,3,4,5,8,9,6,7])
-# s2 = s1.swapVertice(4,6)
-#    G = G(M)
-#    return G    V
+    def copyVacio(self):
+        ret = Grafo([])
+        ret.setMatriz(self.getMatriz())
+        return ret
 
+    def copy(self):
+        G = Grafo(self.getMatriz())
+        G.setA(copy.deepcopy(self.getA()))
+        G.setV(copy.deepcopy(self.getV()))
+        return G
 
+    def swapp(self, v1, v2):
+        copiaV = copy.deepcopy(self._V)
 
+        copiaV[self._V.index(v1)]=v2
+        copiaV[self._V.index(v2)]=v1
+
+        gNuevo = Grafo([])
+        gNuevo.setMatriz(self.getMatriz())
+        gNuevo.cargarDesdeSecuenciaDeVertices(copiaV)
+        return gNuevo
