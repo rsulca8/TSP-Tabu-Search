@@ -1,7 +1,4 @@
-E2/__pycache__/Arista.cpython-37.pyc
-E2/__pycache__/clsTxt.cpython-37.pyc
-E2/__pycache__/Grafo.cpython-37.pyc
-E2/__pycache__/Table.cpython-37.pyc
-E2/__pycache__/TSP.cpython-37.pyc
-E2/__pycache__/Tabu.cpython-37.pyc
-E2/__pycache__/Vertice.cpython-37.pyc
+*.pyc
+*.tsp
+*.txt
+GUI/node_modules

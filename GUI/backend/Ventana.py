@@ -15,7 +15,7 @@ class Ventana(tk.Tk):
         self.barraMenus()
         self.menuGrafo()
         self.__matrizDistancias=[]
-        
+    
     def titulo(self):
         self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
         self.__labelTitulo.pack()
@@ -27,12 +27,9 @@ class Ventana(tk.Tk):
         self.__menuArchivo.add_separator()
         self.__menuArchivo.add_command(label="Open File", command=self.openFile)
         self.__menu.add_cascade(label="File", menu=self.__menuArchivo)
-        self.__menuArchivo.add_command(label="Import File", command=self.importFile)
-        
         self.config(menu = self.__menu)
     
     def menuGrafo(self):
-        self.__nb = tk.ttk.Notebook(self)
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
         self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
         self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
@@ -42,111 +39,12 @@ class Ventana(tk.Tk):
         self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
         self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
 
-    def importFile(self):
-        print("Import file")
-        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
-        self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
-        self.importDesdeFile(nombreArchivo)
-        #self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo)
-
-    def listToString(self, s): 
-        str1 = ""  
-        for ele in s:  
-            str1 += ele   
-
-        return str1
-
-    def importDesdeFile(self, pathArchivo):
-        archivo = open(pathArchivo,"r")
-        lineas = archivo.readlines()
-        lineas = self.listToString(lineas)
-        
-        cad = "################################ Solucion Optima ####################################\n"
-        indSeccionCoord = lineas.index(cad)
-        indSeccionCoord = indSeccionCoord + len(cad)
-        lineas=lineas[indSeccionCoord:]
-        print("Lineas: "+lineas)
-        
-        cad = "Aristas:         ["
-        indSeccionCoord = lineas.index(cad)
-        indSeccionCoord = indSeccionCoord + len(cad)
-        lineas=lineas[indSeccionCoord:]
-        #print("Lineas: "+lineas)
-        
-        #Busco la ultima posicion de...
-        indLineaEOF = lineas.index("]\n")
-        lineas = lineas[:indLineaEOF]
-        #print(lineas)
-
-        coordenadas = []
-        #print("indice: "+str(indSeccionCoord))
-        #Lista donde irán las coordenadas (vertice, x, y)
-        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
-        while (lineas!=""):
-            indInf = lineas.index("(") +1
-            indSup = lineas.index(")")
-            textoLinea = lineas[indInf:indSup]
-            ind = textoLinea.index(",")     #Obtiene (v1,v2, ...) => v1
-            v1 = textoLinea[:ind]
-            textoLinea = textoLinea[ind+1:]
-            ind = textoLinea.index(",")  #Obtiene (v1,v2, dist) => v2
-            v2 = textoLinea[:ind]
-            textoLinea = textoLinea[ind+1:]
-            dist = textoLinea[:indSup]  #Obtiene (v1,v2, dist) => v2
-            
-            #print("dist: ",float(dist))
-            lineas = lineas[indSup+1:]
-            coordenadas.append([int(v1),int(v2),float(dist)])
-        
-        print("Coordenadas: "+ str(coordenadas))
-
-        #matriz=[]
-        #recorrido = []
-        #for i in range(0,len(coordenadas)):
-        #    fila = []
-        #    for j in range(0, len(coordenadas)):
-                #if()
-                #fila.append(coordCol[2])
-            #matriz.append(fila)
-        #print("Matriz: "+str(matriz))
-        #for coordRow in coordenadas:
-        #    fila = []            
-        #    for coordCol in coordenadas:
-        #        a = coordRow[0]
-        #        b = coordCol[1]
-        #        print("a: "+str(a)+"      b: "+str(b))
-        #        auxDist = matriz[a][b]
-        #        matriz[a][b]=matriz[b][a]
-        #        matriz[b][a]=auxDist
-        #    #matriz.append(fila)
-        #    recorrido = Vertice(coordRow[0])
-        #print("Matriz: "+str(matriz))
-        #self.__matrizDistancias =  matriz
-
-        #Arma la matriz de distancias. Calculo la distancia euclidea
-        #for coordRow in coordenadas:        #[[x1,x2,dist],...]
-        #    fila = []            
-        #    for coordCol in coordenadas:
-        #        x1 = float(coordRow[1])
-        #        y1 = float(coordRow[2])
-        #        x2 = float(coordCol[1])
-        #        y2 = float(coordCol[2])
-        #        dist = self.distancia(x1,y1,x2,y2)
-        #        
-        #        #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
-        #        if(dist == 0):
-        #            dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
-        #        fila.append(dist)
-        #        
-        #    matriz.append(fila)
-        #self.__matrizDistancias =  matriz
-
     def openFile(self):
         nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
         #self.__g = Grafo(self.__nombreArchivo, None, None)
         self.cargarDesdeEUC_2D(nombreArchivo)
         self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
-        self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo, False)
+        self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo)
         self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
         self.__botonMostrarGrafo.configure(state="normal")
                 
@@ -182,8 +80,7 @@ class Ventana(tk.Tk):
                 if(dist == 0):
                     dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
                 fila.append(dist)
-
-            #print("Fila: "+str(fila))    
+                
             matriz.append(fila)
         self.__matrizDistancias =  matriz
 
@@ -295,7 +192,7 @@ class Ventana(tk.Tk):
         print("Matriz distancias: ",self.__matrizDistancias)
         
         self.__matrizDistancias=matrizDist
-        self.__tsp=TSP(self.__matrizDistancias, "MatrizNueva", 10,15,10,15)
+        self.__tsp=TSP(self.__matrizDistancias, "MatrizNueva")
         
 
     def mostrarGrafo(self):
@@ -305,7 +202,7 @@ class Ventana(tk.Tk):
         
         #vertices_header = tuple(i for i in str(self.__g.getV()[i].getValue()))
         #print(vertices_header)
-        vertices_header=self.verticesATupla([Vertice(" ")]+self.__g.getV())
+        vertices_header=verticesATupla([Vertice(" ")]+self.__g.getV())
         tabla = Table(self.__ventanaTabla, title="Vertices", headers=vertices_header)
         M = self.__g.getMatriz()
         for i in range(0,len(M)):
@@ -316,19 +213,13 @@ class Ventana(tk.Tk):
             tabla.add_row(fila)
         tabla.pack()   
 
-    def getMatrizDistancas(self):
-        return self.__matrizDistancias
 
-    def verticesATupla(self, V):
-        v = []
-        for i in V:
-            v.append(str(i.getValue()))
-        return v
+def verticesATupla(V):
+    v = []
+    for i in V:
+        v.append(str(i.getValue()))
+    return v
 
-#ventana = Ventana()
-#ventana.mainloop()
-#if __name__ == "__main__":
-#    ventana = Ventana()
-#    ventana.cargarDesdeEUC_2D("C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp")
-#    #TSP(ventana.getMatrizDistancas(),"/home/rodrigo/Documentos/Git/2/TSP-Tabu-Search/eil50.tsp")
-#    TSP(ventana.getMatrizDistancas(),"C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp",False)
+ventana = Ventana()
+
+ventana.mainloop()

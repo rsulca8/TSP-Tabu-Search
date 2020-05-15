@@ -11,16 +11,16 @@ from clsTxt import clsTxt
 from time import time
 
 class TSP:
-    def __init__(self, M: list, nombreArchivo, importFile):
+    def __init__(self, M: list, nombreArchivo, tenureADD, tenureMaxADD, tenureDROP, tenureMaxDROP):
         self._G = Grafo(M)   #Grafo original
         print("Se cargo el archivo")
         self.__soluciones = []   #Lista de Grafos que corresponden a las soluciones
-        self.__tenureADD = int(len(M)*0.1)    #Mas adelante que se ingrese por ventana
-        self.__tenureMaxADD = int(len(M)*0.15)
-        self.__tenureDROP = int(len(M)*0.1)   #idem jaja
-        self.__tenureMaxDROP = int(len(M)*0.15)
+        self.__tenureADD =  tenureADD     #Mas adelante que se ingrese por ventana  # int(len(M)*0.1)
+        self.__tenureMaxADD =  tenureMaxADD       #int(len(M)*0.15)
+        self.__tenureDROP =  tenureDROP         #int(len(M)*0.1)   #idem jaja
+        self.__tenureMaxDROP =  tenureMaxDROP      #int(len(M)*0.15)
         self.__txt = clsTxt(str(nombreArchivo))
-        self.__importFile = importFile
+        #self.__importFile = importFile  #Le saqué el impo
         self.tabuSearch()
 
     def vecinoMasCercano(self, matrizDist: list, pos: int, visitados: list):
