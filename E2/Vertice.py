@@ -20,3 +20,4 @@ class Vertice():
     
     def __ne__(self,otro):
         return (str(self.getValue()) != str(otro.getValue()))
+

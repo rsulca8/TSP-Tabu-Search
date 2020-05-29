@@ -174,6 +174,10 @@ class Grafo:
             costo+= dist
         self.__costoAsociado = costo + self.getMatriz()[rV.index(seq[len(seq)-1])][rV.index(seq[0])]
 
+    def incrementaFrecuencia(self):
+        for x in range(0,len(self.getA())):
+            self.getA()[x].incFrecuencia()
+
     def copyVacio(self):
         ret = Grafo([])
         ret.setMatriz(self.getMatriz())
@@ -195,3 +199,29 @@ class Grafo:
         gNuevo.setMatriz(self.getMatriz())
         gNuevo.cargarDesdeSecuenciaDeVertices(copiaV)
         return gNuevo
+
+
+    def mejoresIndices(self, solucion, lista_permit):
+        mayorVerticeOrigen = 0
+        iMin = 0
+        for i in range(0,len(solucion)):
+            origen = solucion[i].getValue()-1
+            destino = solucion[i+1].getValue()-1
+            dist = self.getMatriz()[origen][destino]
+            
+            #Busca la peor arista
+            if(dist > mayorVerticeOrigen and (origen in lista_permit) and (destino in lista_permit)): 
+                minimo = self.getMatriz()[origen][0]
+                filaVertice = self.getMatriz()[origen]
+                jMin = 0
+                #Busca el mejor destino para la arista encontrada, asegurándose de que no esté en la lista Tabú
+                for j in range(0,len(filaVertice)):
+                    if(filaVertice[j]<minimo and Vertice(j+1) in lista_permit):
+                        minimo = dist
+                        jMin = j
+                iMin = i
+                
+                iMin
+                jMin
+
+        return i,j
