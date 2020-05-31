@@ -3,7 +3,6 @@ COMMENT : 194 locations in Qatar
 COMMENT : Derived from National Imagery and Mapping Agency data	(length 9352)
 TYPE : TSP
 DIMENSION : 194
-OPTIMO: 9352
 EDGE_WEIGHT_TYPE : EUC_2D
 NODE_COORD_SECTION
 1 24748.3333 50840.0000
