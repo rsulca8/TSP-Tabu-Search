@@ -6,6 +6,7 @@ COMMENT:  have been removed.  Thanks to Jay Muthuswamy and others for
 COMMENT:  requesting data sets without duplications.
 TYPE: TSP
 DIMENSION: 38
+OPTIMO: 6656
 EDGE_WEIGHT_TYPE: EUC_2D	length 6656
 NODE_COORD_SECTION
 1 11003.611100 42102.500000

@@ -1,25 +1,29 @@
 import tkinter as tk
 import re
 import math
+import time
 from TSP import TSP
 from Table import Table
 from Vertice import Vertice
 import tkinter.filedialog
 import os
+from tkinter import ttk
+from os import listdir
+from os.path import isfile, join
+
 
 class Ventana(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        self.geometry("400x400+350+150")
-        self.titulo()
-        self.barraMenus()
-        self.menuGrafo()
+        self.geometry("370x410+350+150")
+        self.title("TSP Solver con Tabu Search")
         self.__matrizDistancias=[]
-        
-    def titulo(self):
-        self.__labelTitulo = tk.Label(self,text = "TSP Solver con Tabu Search")
-        self.__labelTitulo.pack()
+        self.__nro = 0
+        self.__openFolder = False
 
+        self.barraMenus()
+        self.menuConfig()
+    
     def barraMenus(self):
         self.__menu = tk.Menu(self)
         self.__menuArchivo = tk.Menu(self.__menu)
@@ -27,27 +31,121 @@ class Ventana(tk.Tk):
         self.__menuArchivo.add_separator()
         self.__menuArchivo.add_command(label="Open File", command=self.openFile)
         self.__menu.add_cascade(label="File", menu=self.__menuArchivo)
-        self.__menuArchivo.add_command(label="Import File", command=self.importFile)
-        
+        self.__menuArchivo.add_command(label="Open Folder", command=self.openFolder)
+
         self.config(menu = self.__menu)
     
-    def menuGrafo(self):
-        self.__nb = tk.ttk.Notebook(self)
+    def menuConfig(self):
         self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
-        self.__botonMostrarGrafo = tk.Button(self, text = "Mostrar Grafo", command=self.mostrarGrafo,state="disabled")
-        self.__labelObtenerCiclo = tk.Label(self, text = "Obtener Ciclo Hamiltoneano más corto ;)")
-        self.__botonVecinoCercano = tk.Button(self, text = "Solucion Usando el Vecino Cercano", command=self.mostrarGrafo,state="disabled")
-        self.__labelEstadoGrafo.pack(fill=tk.X, padx=40)
-        self.__botonMostrarGrafo.pack(fill=tk.X, padx=40)
-        self.__botonVecinoCercano.pack(fill=tk.X, padx=40)
-        self.__labelObtenerCiclo.pack(fill=tk.X, padx=40)
+        self.__labelEstadoGrafo.place(x=120,y=0)
+        
+        #Solucion inicial
+        self.__labelSolInicial = tk.Label(self, text = "Solucion inicial")
+        self.__labelSolInicial.place(x=30, y=50)
+        
+        self.__combo1list=['Vecino mas cercano', 'Al azar']
+        self.__eSolInicial = tk.StringVar()
+        self.__combo1=ttk.Combobox(self, textvariable=self.__eSolInicial, values=self.__combo1list, width = 29, state = "disabled")
+        self.__combo1.place(x=130, y=50)
+        
+        #Nro de intercambios
+        self.__labelNroIntercambios = tk.Label(self, text= "Max Intercambios")
+        self.__labelNroIntercambios.place(x=25, y = 90)
+        self.__nroIntercambios = tk.IntVar()
+        self.__spinboxNroIntercambios = tk.Spinbox(self, from_ = 1, to = 3, width = 5, state = "disabled", textvariable = self.__nroIntercambios)
+        self.__spinboxNroIntercambios.place(x=130, y=90)
+        
+        self.__combo2list=['2-opt', '3-opt']
+        self.__eOpt = tk.StringVar()
+        self.__comboOpt=ttk.Combobox(self, textvariable=self.__eOpt, values=self.__combo2list, width = 5, state = "disabled")
+        self.__comboOpt.place(x=180, y=88)        
+        
 
-    def importFile(self):
-        print("Import file")
-        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
-        self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
-        self.importDesdeFile(nombreArchivo)
-        #self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo)
+        #Tenure ADD
+        self.__labelTenureADD = tk.Label(self, text = "Tenure ADD")
+        self.__labelTenureADD.place(x=55, y=130)
+        self.__boxADD = tk.IntVar()
+        self.__spinboxADD = tk.Spinbox(self, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxADD)
+        self.__spinboxADD.place(x=130, y=130)
+
+        #Tenure DROP
+        self.__labelTenureDROP = tk.Label(self, text = "Tenure DROP")
+        self.__labelTenureDROP.place(x=205, y=130)
+        self.__boxDROP = tk.IntVar()
+        self.__spinboxDROP = tk.Spinbox(self, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxDROP)
+        self.__spinboxDROP.place(x=280, y=130)
+        
+        #Condicion de parada
+        self.__labelTiempoEjecucion = tk.Label(self, text = "Tiempo de ejecución")
+        self.__labelTiempoEjecucion.place(x=10, y=180)
+        self.__eTime = tk.StringVar()
+        self.__entryTiempoEjecucion = tk.Entry(self, textvariable = self.__eTime, width = 25, state = "disabled")
+        self.__entryTiempoEjecucion.place(x=130, y=180)
+        self.__labelTEmin = tk.Label(self, text = "(min)")
+        self.__labelTEmin.place(x=290, y=180)
+
+        #Mostrar datos
+        self.__areaDatos = tk.Text(self, height = 9, width = 41, state ="disabled")
+        self.__areaDatos.place(x=17, y=220)
+
+        #Calcular
+        self.__Ok = tk.Button(self, text = "Calcular", command=self.cargarDatos, width = 7, state="disabled")
+        self.__Ok.place(x=290, y=375)
+
+    def cargarDatos(self):
+        if(self.__eTime.get()!=''):
+            self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo+"_"+str(self.__eTime.get())+"min", self.__eSolInicial.get(), self.__nroIntercambios.get(),
+            self.__eOpt.get(), self.__boxADD.get(), self.__boxDROP.get(), self.__eTime.get(), self.__optimo)
+            
+            if(self.__openFolder):
+                for inst in self.__listaInstancias[1:]:
+                    self.cargarDesdeEUC_2D(self.__mypath+"/"+inst)
+                    self.__nombreArchivo = os.path.splitext(inst)[0]
+                    print("Siguiente instancia: "+str(self.__nombreArchivo))
+                    time_aux = self.__eTime.get()
+                    self.calcularDatos()
+                    self.__eTime.set(time_aux)
+                    self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo+"_"+str(self.__eTime.get())+"min", self.__eSolInicial.get(), self.__nroIntercambios.get(),
+                    self.__eOpt.get(), self.__boxADD.get(), self.__boxDROP.get(), self.__eTime.get(), self.__optimo)
+
+        else:
+            print("No se permite valores vacios")
+
+    def calcularDatos(self):
+        if(self.__openFolder):
+            self.__labelEstadoGrafo.configure(text = "Grafos Cargados")
+        else:
+            self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
+            
+        self.__labelRecomienda = tk.Label(text = "Se recomienda los siguientes valores...")
+        self.__labelRecomienda.place(x=70,y=20)        
+        
+        tenureADD = int(len(self.__matrizDistancias)*0.1)
+        tenureDROP = int(len(self.__matrizDistancias)*0.1)+1
+
+        self.__Ok.configure(state="normal")
+        self.__combo1.configure(state = "readonly")
+        self.__combo1.set('Vecino mas cercano')
+        self.__comboOpt.configure(state = "readonly")
+        self.__comboOpt.set('2-opt')
+
+        #Nro intercambios
+        cantIntercambios = 2
+
+        self.__nroIntercambios.set(cantIntercambios)
+        self.__spinboxNroIntercambios.configure(state = "readonly", textvariable = self.__nroIntercambios)
+
+        #Tenure ADD y DROP
+        self.__boxADD.set(tenureADD)
+        self.__spinboxADD.configure(state = "readonly", textvariable=self.__boxADD)
+
+        self.__boxDROP.set(tenureDROP)
+        self.__spinboxDROP.configure(state = "readonly", textvariable=self.__boxDROP)
+        
+        self.__label_RecomiendacTiempo = tk.Label(text = "Se recomienda como minimo")
+        self.__label_RecomiendacTiempo.place(x=100, y=155)
+        self.__eTime.set(15.0)
+        self.__entryTiempoEjecucion.configure(state = "normal", textvariable = self.__eTime)
 
     def listToString(self, s): 
         str1 = ""  
@@ -56,109 +154,34 @@ class Ventana(tk.Tk):
 
         return str1
 
-    def importDesdeFile(self, pathArchivo):
-        archivo = open(pathArchivo,"r")
-        lineas = archivo.readlines()
-        lineas = self.listToString(lineas)
+    def openFolder(self):
+        self.__mypath = tk.filedialog.askdirectory(initialdir = ".", title='Seleccione directorio con instancias')
+        self.__listaInstancias = [f for f in listdir(self.__mypath) if isfile(join(self.__mypath, f))]
+        self.__openFolder = True
         
-        cad = "################################ Solucion Optima ####################################\n"
-        indSeccionCoord = lineas.index(cad)
-        indSeccionCoord = indSeccionCoord + len(cad)
-        lineas=lineas[indSeccionCoord:]
-        print("Lineas: "+lineas)
-        
-        cad = "Aristas:         ["
-        indSeccionCoord = lineas.index(cad)
-        indSeccionCoord = indSeccionCoord + len(cad)
-        lineas=lineas[indSeccionCoord:]
-        #print("Lineas: "+lineas)
-        
-        #Busco la ultima posicion de...
-        indLineaEOF = lineas.index("]\n")
-        lineas = lineas[:indLineaEOF]
-        #print(lineas)
+        self.cargarDesdeEUC_2D(self.__mypath+"/"+self.__listaInstancias[0])
+        self.__nombreArchivo = os.path.splitext(self.__listaInstancias[0])[0]
+        print("Primera instancia: "+str(self.__nombreArchivo))
 
-        coordenadas = []
-        #print("indice: "+str(indSeccionCoord))
-        #Lista donde irán las coordenadas (vertice, x, y)
-        #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
-        while (lineas!=""):
-            indInf = lineas.index("(") +1
-            indSup = lineas.index(")")
-            textoLinea = lineas[indInf:indSup]
-            ind = textoLinea.index(",")     #Obtiene (v1,v2, ...) => v1
-            v1 = textoLinea[:ind]
-            textoLinea = textoLinea[ind+1:]
-            ind = textoLinea.index(",")  #Obtiene (v1,v2, dist) => v2
-            v2 = textoLinea[:ind]
-            textoLinea = textoLinea[ind+1:]
-            dist = textoLinea[:indSup]  #Obtiene (v1,v2, dist) => v2
-            
-            #print("dist: ",float(dist))
-            lineas = lineas[indSup+1:]
-            coordenadas.append([int(v1),int(v2),float(dist)])
-        
-        print("Coordenadas: "+ str(coordenadas))
-
-        #matriz=[]
-        #recorrido = []
-        #for i in range(0,len(coordenadas)):
-        #    fila = []
-        #    for j in range(0, len(coordenadas)):
-                #if()
-                #fila.append(coordCol[2])
-            #matriz.append(fila)
-        #print("Matriz: "+str(matriz))
-        #for coordRow in coordenadas:
-        #    fila = []            
-        #    for coordCol in coordenadas:
-        #        a = coordRow[0]
-        #        b = coordCol[1]
-        #        print("a: "+str(a)+"      b: "+str(b))
-        #        auxDist = matriz[a][b]
-        #        matriz[a][b]=matriz[b][a]
-        #        matriz[b][a]=auxDist
-        #    #matriz.append(fila)
-        #    recorrido = Vertice(coordRow[0])
-        #print("Matriz: "+str(matriz))
-        #self.__matrizDistancias =  matriz
-
-        #Arma la matriz de distancias. Calculo la distancia euclidea
-        #for coordRow in coordenadas:        #[[x1,x2,dist],...]
-        #    fila = []            
-        #    for coordCol in coordenadas:
-        #        x1 = float(coordRow[1])
-        #        y1 = float(coordRow[2])
-        #        x2 = float(coordCol[1])
-        #        y2 = float(coordCol[2])
-        #        dist = self.distancia(x1,y1,x2,y2)
-        #        
-        #        #Para el primer caso. Calculando la distancia euclidea entre si mismo da 0
-        #        if(dist == 0):
-        #            dist = 999999999999 #El modelo no debería tener en cuenta a las diagonal, pero por las dudas
-        #        fila.append(dist)
-        #        
-        #    matriz.append(fila)
-        #self.__matrizDistancias =  matriz
+        self.calcularDatos()
 
     def openFile(self):
-        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("jpeg files","*.jpg")))
-        #self.__g = Grafo(self.__nombreArchivo, None, None)
+        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("tsp files","*.tsp")))
         self.cargarDesdeEUC_2D(nombreArchivo)
         self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
-        self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo, False)
-        self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
-        self.__botonMostrarGrafo.configure(state="normal")
-                
+        self.calcularDatos()
+
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
     def cargarDesdeEUC_2D(self,pathArchivo):
         archivo = open(pathArchivo,"r")
         lineas = archivo.readlines()
+        print(archivo.read(20))
         #Busco la posiciones de..
         indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
         lineaEOF = lineas.index("EOF\n")
-
-        #Lista donde irán las coordenadas (vertice, x, y)
+        lineaOptimo = [x for x in lineas[0:indSeccionCoord] if re.findall(r"OPTIMO:[\S 0-9]+",x)][0]
+        self.__optimo = float(re.findall(r"[0-9]+",lineaOptimo)[0])
+        print(self.__optimo)
         coordenadas = []
         #Separa las coordenadas en una matriz, es una lista de listas (vertice, coordA, coordB)
         for i in range(indSeccionCoord+1, lineaEOF):
@@ -166,6 +189,7 @@ class Ventana(tk.Tk):
             textoLinea = re.sub("\n", "", textoLinea) #Elimina los saltos de línea
             splitLinea = textoLinea.split(" ") #Divide la línea por " " 
             coordenadas.append([splitLinea[0],splitLinea[1],splitLinea[2]]) #[[v1,x1,y1], [v2,x2,y2], ...]
+
         
         matriz = []
         #Arma la matriz de distancias. Calculo la distancia euclidea
@@ -188,7 +212,7 @@ class Ventana(tk.Tk):
         self.__matrizDistancias =  matriz
 
     def distancia(self, x1,y1,x2,y2):
-        return round(math.sqrt((x1-x2)**2+(y1-y2)**2),2)
+        return round(math.sqrt((x1-x2)**2+(y1-y2)**2),3)
    
     #Cargo una matriz de forma manual. Ingreso el nro de vertices y verifico
     def newFile(self):
@@ -201,7 +225,7 @@ class Ventana(tk.Tk):
         nroVertices = tk.StringVar()
         entry1= tk.Entry(t, textvariable=nroVertices)
         entry1.grid(row=0, column=1)
-
+        
         #Verifico que sea un valor correcto
         def verificar():
             label2= tk.Label(t, text="Debe ser entero mayor que 0")
@@ -295,26 +319,8 @@ class Ventana(tk.Tk):
         print("Matriz distancias: ",self.__matrizDistancias)
         
         self.__matrizDistancias=matrizDist
-        self.__tsp=TSP(self.__matrizDistancias, "MatrizNueva", 10,15,10,15)
-        
-
-    def mostrarGrafo(self):
-        self.__ventanaTabla = tk.Toplevel(self)
-        self.__ventanaTabla.title("Grafo Cargado")
-        self.__ventanaTabla.geometry('600x600')
-        
-        #vertices_header = tuple(i for i in str(self.__g.getV()[i].getValue()))
-        #print(vertices_header)
-        vertices_header=self.verticesATupla([Vertice(" ")]+self.__g.getV())
-        tabla = Table(self.__ventanaTabla, title="Vertices", headers=vertices_header)
-        M = self.__g.getMatriz()
-        for i in range(0,len(M)):
-            fila = []
-            fila.append(i+1)
-            for j in range(0,len(M)):
-                fila.append(M[i][j])
-            tabla.add_row(fila)
-        tabla.pack()   
+        self.__nombreArchivo = "Matriz Nueva"
+        self.calcularDatos()
 
     def getMatrizDistancas(self):
         return self.__matrizDistancias
@@ -325,10 +331,5 @@ class Ventana(tk.Tk):
             v.append(str(i.getValue()))
         return v
 
-#ventana = Ventana()
-#ventana.mainloop()
-#if __name__ == "__main__":
-#    ventana = Ventana()
-#    ventana.cargarDesdeEUC_2D("C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp")
-#    #TSP(ventana.getMatrizDistancas(),"/home/rodrigo/Documentos/Git/2/TSP-Tabu-Search/eil50.tsp")
-#    TSP(ventana.getMatrizDistancas(),"C:\\Users\\Maxi\\Documents\\UNSA\\LAS\\5to Año\\1er cuatrimestre\\Optativa (Opt. Conc. y Paralela)\\Unidad 2\\TP3\\tp3-tsp-tabusearch-nuevo\\eil101.tsp",False)
+ventana = Ventana()
+ventana.mainloop()

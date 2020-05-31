@@ -1,4 +1,5 @@
 *.pyc
+*.csv
 *.tsp
 *.txt
 GUI/node_modules

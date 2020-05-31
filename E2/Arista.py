@@ -5,7 +5,14 @@ class Arista():
         self._origen = origen
         self._destino = destino
         self._peso = peso
+        self._frecuencia = 0
     
+    def incFrecuencia(self):
+        self._frecuencia+=1
+
+    def getFrecuencia(self):
+        return self._frecuencia
+
     def setOrigen(self, origen):
         self._origen = origen
             
@@ -39,3 +46,4 @@ class Arista():
     def __repr__(self):
         return str(self)
 
+ 
