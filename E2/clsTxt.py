@@ -17,12 +17,12 @@ class clsTxt:
             i += 1
 
         self.__nombre = "%s (%i)" %(self.__nombre,i)    
-        print(self.__nombre)
         self.__txt = open(str(self.__nombre)+".txt", "w")
         self.__ArchivoCSV = open(str(self.__nombre)+".csv", "w",newline="")
         self.__st = ""
         self.__fieldnames = ['iteración','Vertices','Aristas','costo',"intercambios","tenureADD","tenureDROP","tiempo","error"]
         self.__CSV = csv.DictWriter(self.__ArchivoCSV, fieldnames=self.__fieldnames)
+        self.CSV('iteración','Vertices','Aristas','costo',"intercambios","tenureADD","tenureDROP","tiempo","error")
 
     def escribir(self, st):
         self.__st = self.__st + st+"\n"

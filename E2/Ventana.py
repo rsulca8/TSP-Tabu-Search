@@ -10,19 +10,20 @@ import os
 from tkinter import ttk
 from os import listdir
 from os.path import isfile, join
-
+import ntpath
 
 class Ventana(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
-        self.geometry("370x410+350+150")
+        self.geometry("600x600")
         self.title("TSP Solver con Tabu Search")
         self.__matrizDistancias=[]
         self.__nro = 0
         self.__openFolder = False
-
+        self.__tabs = ttk.Notebook(self)
+        self.elementosGUI()
+        self.__frames = []
         self.barraMenus()
-        self.menuConfig()
     
     def barraMenus(self):
         self.__menu = tk.Menu(self)
@@ -35,117 +36,132 @@ class Ventana(tk.Tk):
 
         self.config(menu = self.__menu)
     
-    def menuConfig(self):
-        self.__labelEstadoGrafo = tk.Label(self, text = "No se ha cargado Grafo")
-        self.__labelEstadoGrafo.place(x=120,y=0)
+    def elementosGUI(self):
+        self.__labelSolInicial = []
+        self.__labelEstadoGrafo = []
+        self.__eSolInicial = []
+        self.__combo1 = []
+        self.__labelNroIntercambios = []
+        self.__spinboxNroIntercambios = []
+        self.__eOpt = []
+        self.__comboOpt = []
+        self.__nroIntercambios = []
+        self.__labelTenureADD = []
+        self.__labelTenureDROP = []
+        self.__boxADD = []
+        self.__spinboxDROP = []
+        self.__spinboxADD = []
+        self.__boxDROP = []
+        self.__labelTiempoEjecucion = []
+        self.__eTime = []
+        self.__entryTiempoEjecucion = []
+        self.__labelTEmin = []
+        self.__areaDatos = []
+        self.__label_RecomiendacTiempo = []
+        self.__matrizDistancias = []
+        self.__labelRecomienda =[]
+    
+    def menuConfig(self,frame,i):
+        self.__labelEstadoGrafo.append(tk.Label(frame, text = "No se ha cargado Grafo"))
+        self.__labelEstadoGrafo[i].place(relx=0.4,rely=0.05)
+        #Pestañas            
         
         #Solucion inicial
-        self.__labelSolInicial = tk.Label(self, text = "Solucion inicial")
-        self.__labelSolInicial.place(x=30, y=50)
+        self.__labelSolInicial.append(tk.Label(frame, text = "Solucion inicial"))
+        self.__labelSolInicial[i].place(relx=0.3, rely=0.10)
         
         self.__combo1list=['Vecino mas cercano', 'Al azar']
-        self.__eSolInicial = tk.StringVar()
-        self.__combo1=ttk.Combobox(self, textvariable=self.__eSolInicial, values=self.__combo1list, width = 29, state = "disabled")
-        self.__combo1.place(x=130, y=50)
+        self.__eSolInicial.append(tk.StringVar())
+        self.__combo1.append(ttk.Combobox(frame, textvariable=self.__eSolInicial, values=self.__combo1list, width = 29, state = "disabled"))
+        self.__combo1[i].place(relx=0.4, rely=0.10)
         
         #Nro de intercambios
-        self.__labelNroIntercambios = tk.Label(self, text= "Max Intercambios")
-        self.__labelNroIntercambios.place(x=25, y = 90)
-        self.__nroIntercambios = tk.IntVar()
-        self.__spinboxNroIntercambios = tk.Spinbox(self, from_ = 1, to = 3, width = 5, state = "disabled", textvariable = self.__nroIntercambios)
-        self.__spinboxNroIntercambios.place(x=130, y=90)
+        self.__labelNroIntercambios.append(tk.Label(frame, text= "Max Intercambios"))
+        self.__labelNroIntercambios[i].place(relx=0.3, rely = 0.20)
+        self.__nroIntercambios.append(tk.IntVar())
+        self.__spinboxNroIntercambios.append(tk.Spinbox(frame, from_ = 1, to = 3, width = 5, state = "disabled", textvariable = self.__nroIntercambios))
+        self.__spinboxNroIntercambios[i].place(relx=0.6, rely=0.20)
         
         self.__combo2list=['2-opt', '3-opt']
-        self.__eOpt = tk.StringVar()
-        self.__comboOpt=ttk.Combobox(self, textvariable=self.__eOpt, values=self.__combo2list, width = 5, state = "disabled")
-        self.__comboOpt.place(x=180, y=88)        
+        self.__eOpt.append(tk.StringVar())
+        self.__comboOpt.append(ttk.Combobox(frame, textvariable=self.__eOpt, values=self.__combo2list, width = 5, state = "disabled"))
+        self.__comboOpt[i].place(relx=0.75, rely=0.20)        
         
-
         #Tenure ADD
-        self.__labelTenureADD = tk.Label(self, text = "Tenure ADD")
-        self.__labelTenureADD.place(x=55, y=130)
-        self.__boxADD = tk.IntVar()
-        self.__spinboxADD = tk.Spinbox(self, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxADD)
-        self.__spinboxADD.place(x=130, y=130)
+        self.__labelTenureADD.append(tk.Label(frame, text = "Tenure ADD"))
+        self.__labelTenureADD[i].place(relx=0.2, rely=0.27)
+        self.__boxADD.append(tk.IntVar())
+        self.__spinboxADD.append(tk.Spinbox(frame, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxADD))
+        self.__spinboxADD[i].place(relx=0.4, rely=0.27)
 
         #Tenure DROP
-        self.__labelTenureDROP = tk.Label(self, text = "Tenure DROP")
-        self.__labelTenureDROP.place(x=205, y=130)
-        self.__boxDROP = tk.IntVar()
-        self.__spinboxDROP = tk.Spinbox(self, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxDROP)
-        self.__spinboxDROP.place(x=280, y=130)
+        self.__labelTenureDROP.append(tk.Label(frame, text = "Tenure DROP"))
+        self.__labelTenureDROP[i].place(relx=0.55, rely=0.27)
+        self.__boxDROP.append(tk.IntVar())
+        self.__spinboxDROP.append(tk.Spinbox(frame, from_ = 1, to = 100, width = 5, state = "disabled", textvariable = self.__boxDROP))
+        self.__spinboxDROP[i].place(relx=0.8, rely=0.27)
         
         #Condicion de parada
-        self.__labelTiempoEjecucion = tk.Label(self, text = "Tiempo de ejecución")
-        self.__labelTiempoEjecucion.place(x=10, y=180)
-        self.__eTime = tk.StringVar()
-        self.__entryTiempoEjecucion = tk.Entry(self, textvariable = self.__eTime, width = 25, state = "disabled")
-        self.__entryTiempoEjecucion.place(x=130, y=180)
-        self.__labelTEmin = tk.Label(self, text = "(min)")
-        self.__labelTEmin.place(x=290, y=180)
+        self.__labelTiempoEjecucion.append(tk.Label(frame, text = "Tiempo de ejecución"))
+        self.__labelTiempoEjecucion[i].place(relx=0.2, rely=0.45)
+        self.__eTime.append(tk.StringVar())
+        self.__entryTiempoEjecucion.append(tk.Entry(frame, textvariable = self.__eTime, width = 25, state = "disabled"))
+        self.__entryTiempoEjecucion[i].place(relx=0.5, rely=0.45,relwidth=0.20)
+        self.__labelTEmin.append(tk.Label(frame, text = "(min)"))
+        self.__labelTEmin[i].place(relx=0.75, rely=0.45)
 
         #Mostrar datos
-        self.__areaDatos = tk.Text(self, height = 9, width = 41, state ="disabled")
-        self.__areaDatos.place(x=17, y=220)
+        self.__areaDatos.append(tk.Text(frame, state ="disabled"))
+        self.__areaDatos[i].place(relx=0.2, rely=0.6, relwidth=0.6, relheight=0.4)
+   
 
-        #Calcular
-        self.__Ok = tk.Button(self, text = "Calcular", command=self.cargarDatos, width = 7, state="disabled")
-        self.__Ok.place(x=290, y=375)
+
 
     def cargarDatos(self):
-        if(self.__eTime.get()!=''):
-            self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo+"_"+str(self.__eTime.get())+"min", self.__eSolInicial.get(), self.__nroIntercambios.get(),
-            self.__eOpt.get(), self.__boxADD.get(), self.__boxDROP.get(), self.__eTime.get(), self.__optimo)
-            
-            if(self.__openFolder):
-                for inst in self.__listaInstancias[1:]:
-                    self.cargarDesdeEUC_2D(self.__mypath+"/"+inst)
-                    self.__nombreArchivo = os.path.splitext(inst)[0]
-                    print("Siguiente instancia: "+str(self.__nombreArchivo))
-                    time_aux = self.__eTime.get()
-                    self.calcularDatos()
-                    self.__eTime.set(time_aux)
-                    self.__tsp = TSP(self.__matrizDistancias, self.__nombreArchivo+"_"+str(self.__eTime.get())+"min", self.__eSolInicial.get(), self.__nroIntercambios.get(),
-                    self.__eOpt.get(), self.__boxADD.get(), self.__boxDROP.get(), self.__eTime.get(), self.__optimo)
+        for i in range(0,len(self.__listaInstancias)):
+            self.__nombreArchivo = self.__listaInstancias[i]
+            print("RESOLVIENDO ------------------> "+str(self.__nombreArchivo))
+            self.__tsp = TSP(self.__matrizDistancias[i], self.__nombreArchivo+"_"+str(self.__eTime[i].get())+"min", self.__eSolInicial[i].get(), self.__nroIntercambios[i].get(),
+            self.__eOpt[i].get(), self.__boxADD[i].get(), self.__boxDROP[i].get(), self.__eTime[i].get(), self.__optimo)
 
         else:
             print("No se permite valores vacios")
 
-    def calcularDatos(self):
+    def calcularDatos(self,i):
         if(self.__openFolder):
-            self.__labelEstadoGrafo.configure(text = "Grafos Cargados")
+            self.__labelEstadoGrafo[i].configure(text = "Grafos Cargados")
         else:
-            self.__labelEstadoGrafo.configure(text = "Grafo Cargado")
+            self.__labelEstadoGrafo[i].configure(text = "Grafo Cargado")
             
-        self.__labelRecomienda = tk.Label(text = "Se recomienda los siguientes valores...")
-        self.__labelRecomienda.place(x=70,y=20)        
+        self.__labelRecomienda.append(tk.Label(text = "Se recomienda los siguientes valores..."))
+        self.__labelRecomienda[i].place(relx=0.3,rely=0.5)        
         
-        tenureADD = int(len(self.__matrizDistancias)*0.1)
-        tenureDROP = int(len(self.__matrizDistancias)*0.1)+1
+        tenureADD = int(len(self.__matrizDistancias[i])*0.1)
+        tenureDROP = int(len(self.__matrizDistancias[i])*0.1)+1
 
-        self.__Ok.configure(state="normal")
-        self.__combo1.configure(state = "readonly")
-        self.__combo1.set('Vecino mas cercano')
-        self.__comboOpt.configure(state = "readonly")
-        self.__comboOpt.set('2-opt')
+        self.__combo1[i].configure(state = "readonly")
+        self.__combo1[i].set('Vecino mas cercano')
+        self.__comboOpt[i].configure(state = "readonly")
+        self.__comboOpt[i].set('2-opt')
 
         #Nro intercambios
         cantIntercambios = 2
 
-        self.__nroIntercambios.set(cantIntercambios)
-        self.__spinboxNroIntercambios.configure(state = "readonly", textvariable = self.__nroIntercambios)
+        self.__nroIntercambios[i].set(cantIntercambios)
+        self.__spinboxNroIntercambios[i].configure(state = "readonly", textvariable = self.__nroIntercambios[i])
 
         #Tenure ADD y DROP
-        self.__boxADD.set(tenureADD)
-        self.__spinboxADD.configure(state = "readonly", textvariable=self.__boxADD)
+        self.__boxADD[i].set(tenureADD)
+        self.__spinboxADD[i].configure(state = "readonly", textvariable=self.__boxADD[i])
 
-        self.__boxDROP.set(tenureDROP)
-        self.__spinboxDROP.configure(state = "readonly", textvariable=self.__boxDROP)
+        self.__boxDROP[i].set(tenureDROP)
+        self.__spinboxDROP[i].configure(state = "readonly", textvariable=self.__boxDROP[i])
         
-        self.__label_RecomiendacTiempo = tk.Label(text = "Se recomienda como minimo")
-        self.__label_RecomiendacTiempo.place(x=100, y=155)
-        self.__eTime.set(15.0)
-        self.__entryTiempoEjecucion.configure(state = "normal", textvariable = self.__eTime)
+        self.__label_RecomiendacTiempo.append(tk.Label(text = "Se recomienda como minimo"))
+        self.__label_RecomiendacTiempo[i].place(relx=0.4, rely=0.35)
+        self.__eTime[i].set(15.0)
+        self.__entryTiempoEjecucion[i].configure(state = "normal", textvariable = self.__eTime[i])
+        return 
 
     def listToString(self, s): 
         str1 = ""  
@@ -154,28 +170,46 @@ class Ventana(tk.Tk):
 
         return str1
 
+    def tabs(self, instancias):
+        for i in range(0,len(instancias)):
+            print(instancias[i])
+            self.__frames.append(tk.Frame(self)) 
+            self.menuConfig(self.__frames[i],i)
+            self.__tabs.add(child=self.__frames[i],text=instancias[i])
+            self.cargarDesdeEUC_2D(self.__mypath+"/"+self.__listaInstancias[i],i)
+            self.calcularDatos(i)
+            
+        self.__tabs.pack(expand=1, fill="both")
+        self.__Ok = tk.Button(self, text = "Calcular", command=self.cargarDatos, width = 10, height =30, state="normal")
+        self.__Ok.pack(after=self.__tabs)
+
     def openFolder(self):
         self.__mypath = tk.filedialog.askdirectory(initialdir = ".", title='Seleccione directorio con instancias')
         self.__listaInstancias = [f for f in listdir(self.__mypath) if isfile(join(self.__mypath, f))]
         self.__openFolder = True
-        
-        self.cargarDesdeEUC_2D(self.__mypath+"/"+self.__listaInstancias[0])
+        print(self.__listaInstancias)
+        self.tabs(self.__listaInstancias)        
+
+
         self.__nombreArchivo = os.path.splitext(self.__listaInstancias[0])[0]
         print("Primera instancia: "+str(self.__nombreArchivo))
+        #Calcular
 
-        self.calcularDatos()
+       
 
     def openFile(self):
-        nombreArchivo  = tk.filedialog.askopenfilename(initialdir = ".",title = "Select file",filetypes = (("all files","*.*"),("tsp files","*.tsp")))
-        self.cargarDesdeEUC_2D(nombreArchivo)
-        self.__nombreArchivo = os.path.splitext(os.path.basename(nombreArchivo))[0]
-        self.calcularDatos()
+        self.__listaInstancias = tk.filedialog.askopenfilenames(initialdir = ".",title = "Seleccione Intancia/s TSP",filetypes = (("all files","*.*"),("tsp files","*.tsp")))
+        self.__listaInstancias = list(self.__listaInstancias)
+        self.__mypath = ntpath.split(self.__listaInstancias[0])[0]
+        self.__listaInstancias = [ntpath.split(f)[1] for f in self.__listaInstancias]
+        self.tabs(self.__listaInstancias)    
+        self.__nombreArchivo = os.path.splitext(os.path.basename(self.__listaInstancias[0]))[0]
+        #self.calcularDatos(i)
 
     #Convierto mi archivo EUC_2D en una matriz en la cual pueda trabajar
-    def cargarDesdeEUC_2D(self,pathArchivo):
+    def cargarDesdeEUC_2D(self,pathArchivo,i):
         archivo = open(pathArchivo,"r")
         lineas = archivo.readlines()
-        print(archivo.read(20))
         #Busco la posiciones de..
         indSeccionCoord = lineas.index("NODE_COORD_SECTION\n")
         lineaEOF = lineas.index("EOF\n")
@@ -209,7 +243,7 @@ class Ventana(tk.Tk):
 
             #print("Fila: "+str(fila))    
             matriz.append(fila)
-        self.__matrizDistancias =  matriz
+        self.__matrizDistancias.append(matriz)
 
     def distancia(self, x1,y1,x2,y2):
         return round(math.sqrt((x1-x2)**2+(y1-y2)**2),3)
@@ -320,7 +354,7 @@ class Ventana(tk.Tk):
         
         self.__matrizDistancias=matrizDist
         self.__nombreArchivo = "Matriz Nueva"
-        self.calcularDatos()
+        #self.calcularDatos()
 
     def getMatrizDistancas(self):
         return self.__matrizDistancias
@@ -330,6 +364,12 @@ class Ventana(tk.Tk):
         for i in V:
             v.append(str(i.getValue()))
         return v
+
+
+def archivoDePath(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
 
 ventana = Ventana()
 ventana.mainloop()
